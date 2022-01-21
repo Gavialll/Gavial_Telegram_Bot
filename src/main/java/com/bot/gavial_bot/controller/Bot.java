@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Component
 public class Bot extends TelegramLongPollingBot {
@@ -24,31 +27,54 @@ public class Bot extends TelegramLongPollingBot {
     private String CHAT_ID;
     private String flag = "";
     private Quiz quiz;
-    private final Send send = new Send(Bot.this);
+    private final Send send = new Send(Bot.this, CHAT_ID);
+    private List<newUser> userList = new ArrayList<>();
 
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
+
+        System.out.println(userList);
+        if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
+            flag = "";
+            CHAT_ID = update.getMessage().getChatId().toString();
+            new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
+            newUser user = new newUser();
+            user.setCHAT_ID(CHAT_ID);
+            user.setWordList(wordService.getAll());
+            user.setUpdate(update);
+            user.setFlag(flag);
+            user.setBot(Bot.this);
+            user.start();
+            userList.add(user);
+        }
+        if(update.hasCallbackQuery()) {
+            CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
+            flag = update.getCallbackQuery().getData();
+       }
         if(update.hasMessage()){
             CHAT_ID = update.getMessage().getChatId().toString();
         }
-        if(update.hasCallbackQuery()){
-            CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
+
+        for(newUser thread : userList) {
+            if(thread.getCHAT_ID().equals(CHAT_ID)) {
+                thread.setFlag(flag);
+                thread.setUpdate(update);
+            }
+            else System.out.println("else");
         }
-        startNewUser(update);
+
     }
 
     public void startNewUser(Update update){
         if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
             CHAT_ID = update.getMessage().getChatId().toString();
             new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-//            System.out.println(update.getMessage().getChatId());
         }
 
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
             flag = update.getCallbackQuery().getData();
-//            System.out.println(update.getCallbackQuery().getMessage().getChatId().toString());
         }
 
         if(quiz != null && quiz.getState().equals(Thread.State.WAITING)) {
@@ -77,9 +103,6 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    public void setCHAT_ID(String CHAT_ID) {
-        this.CHAT_ID = CHAT_ID;
-    }
 
     public String getCHAT_ID() {
         return CHAT_ID;

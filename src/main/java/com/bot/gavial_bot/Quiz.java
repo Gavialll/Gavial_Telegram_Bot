@@ -14,11 +14,12 @@ public class Quiz extends Thread{
     private Bot bot;
     private List<Word> wordList;
     private Update update;
+    private String CHAT_ID;
 
     @SneakyThrows
     @Override
     public void run() {
-        Send send = new Send(bot);
+        Send send = new Send(bot, update.getMessage().getChatId().toString());
         int result = 0;
         int index = 0;
         int question = 10;
@@ -50,6 +51,14 @@ public class Quiz extends Thread{
                 return;
             }
         }
+    }
+
+    public String getCHAT_ID() {
+        return CHAT_ID;
+    }
+
+    public void setCHAT_ID(String CHAT_ID) {
+        this.CHAT_ID = CHAT_ID;
     }
 
     public void setUpdate(Update update) {

@@ -6,14 +6,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class Send {
     private Bot bot;
-
-    public Send(Bot bot) {
-        this.bot = bot;
-    }
+    private String CHAT_ID;
 
     public void message(String message){
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(bot.getCHAT_ID());
+        sendMessage.setChatId(CHAT_ID);
         sendMessage.setText(message);
         try {
             bot.execute(sendMessage);
@@ -22,4 +19,8 @@ public class Send {
         }
     }
 
+    public Send(Bot bot, String CHAT_ID) {
+        this.bot = bot;
+        this.CHAT_ID = CHAT_ID;
+    }
 }

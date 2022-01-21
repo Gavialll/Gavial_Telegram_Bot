@@ -3,59 +3,77 @@ package com.bot.gavial_bot;
 import com.bot.gavial_bot.component.*;
 import com.bot.gavial_bot.controller.Bot;
 import com.bot.gavial_bot.model.Word;
+import com.bot.gavial_bot.service.WordService;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 
 public class newUser extends Thread{
+    private String flag ;
     private Update update;
     private Bot bot;
     private String CHAT_ID;
-    private String flag = "";
-    private Quiz quiz;
-    private final Send send = new Send(bot);
     private List<Word> wordList;
-    private Keyboard keyboard;
 
+    @SneakyThrows
     @Override
     public void run() {
-        if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
-            this.CHAT_ID = update.getMessage().getChatId().toString();
-            new Keyboard(bot).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-            System.out.println(update.getMessage().getChatId());
-        }
 
-        if(update.hasCallbackQuery()) {
-            CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
-            flag = update.getCallbackQuery().getData();
-            System.out.println(update.getCallbackQuery().getMessage().getChatId().toString());
-        }
-
-        if(quiz != null && quiz.getState().equals(Thread.State.WAITING)) {
-            quiz.setUpdate(update);
-            System.out.println("fdsd");
+        if(flag.equals("")){
+            synchronized(this) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         switch(flag) {
             case CallbackData.STUDY_WORDS: {
-                quiz = new Quiz();
-                quiz.setUpdate(update);
-                quiz.setWordList(wordList);
-                quiz.setBot(bot);
-                quiz.start();
-                flag = "";
+                Quiz quiz = new Quiz();
+
+
+//                for(Word word : wordList) {
+//                    new Send(bot, CHAT_ID).message(word.getEnglish() + " - " + word.getUkraine());
+//                    synchronized(this) {
+//                        try {
+//                            this.wait();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    if(update.getMessage().getText().equals("str")){
+//                        new Send(bot, CHAT_ID).message("answer OK");
+//                    }
+//                    else System.out.println("else");
+//                }
                 break;
             }
             case CallbackData.GET_ALL: {
-                StringBuilder str = new StringBuilder();
-                for(Word word : wordList) {
-                    str.append(word.getEnglish() + " - " + word.getUkraine() + "\n\n");
-                }
-                send.message(str.toString());
-                new Keyboard(bot).printButton(Message.selectActive, StartPoint.START);
+
                 break;
             }
         }
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
+    public void setCHAT_ID(String CHAT_ID) {
+        this.CHAT_ID = CHAT_ID;
+    }
+
+    public String getCHAT_ID() {
+        return CHAT_ID;
     }
 
     public void setWordList(List<Word> wordList) {
