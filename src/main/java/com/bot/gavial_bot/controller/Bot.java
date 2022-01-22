@@ -1,10 +1,9 @@
 package com.bot.gavial_bot.controller;
 
-import com.bot.gavial_bot.Quiz;
-import com.bot.gavial_bot.component.*;
-import com.bot.gavial_bot.model.User;
-import com.bot.gavial_bot.model.Word;
-import com.bot.gavial_bot.newUser;
+import com.bot.gavial_bot.component.Keyboard;
+import com.bot.gavial_bot.component.Message;
+import com.bot.gavial_bot.component.Send;
+import com.bot.gavial_bot.component.StartPoint;
 import com.bot.gavial_bot.repository.UserRepository;
 import com.bot.gavial_bot.service.WordService;
 import lombok.SneakyThrows;
@@ -26,83 +25,31 @@ public class Bot extends TelegramLongPollingBot {
     private WordService wordService;
     private String CHAT_ID;
     private String flag = "";
-    private Quiz quiz;
     private final Send send = new Send(Bot.this, CHAT_ID);
-    private List<newUser> userList = new ArrayList<>();
+    private List<ThreadUser> userList = new ArrayList<>();
 
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-
-        System.out.println(userList);
+        //Старт першого потоку або обновленн старого
         if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
-            flag = "";
-            CHAT_ID = update.getMessage().getChatId().toString();
-            new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-            newUser user = new newUser();
-            user.setCHAT_ID(CHAT_ID);
-            user.setWordList(wordService.getAll());
-            user.setUpdate(update);
-            user.setFlag(flag);
-            user.setBot(Bot.this);
-            user.start();
-            userList.add(user);
+            createNewThread(update);
         }
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
             flag = update.getCallbackQuery().getData();
-       }
-        if(update.hasMessage()){
+        }
+        if(update.hasMessage()) {
             CHAT_ID = update.getMessage().getChatId().toString();
         }
 
-        for(newUser thread : userList) {
+        for(ThreadUser thread : userList) {
             if(thread.getCHAT_ID().equals(CHAT_ID)) {
-                thread.setFlag(flag);
+                log.info("Set Update in Thread with CHAT_ID = " + CHAT_ID);
                 thread.setUpdate(update);
             }
-            else System.out.println("else");
-        }
-
-    }
-
-    public void startNewUser(Update update){
-        if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
-            CHAT_ID = update.getMessage().getChatId().toString();
-            new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-        }
-
-        if(update.hasCallbackQuery()) {
-            CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
-            flag = update.getCallbackQuery().getData();
-        }
-
-        if(quiz != null && quiz.getState().equals(Thread.State.WAITING)) {
-            quiz.setUpdate(update);
-        }
-
-        switch(flag) {
-            case CallbackData.STUDY_WORDS: {
-                quiz = new Quiz();
-                quiz.setUpdate(update);
-                quiz.setWordList(wordService.getAll());
-                quiz.setBot(Bot.this);
-                quiz.start();
-                flag = "";
-                break;
-            }
-            case CallbackData.GET_ALL: {
-                StringBuilder str = new StringBuilder();
-                for(Word word : wordService.getAll()) {
-                    str.append(word.getEnglish() + " - " + word.getUkraine() + "\n\n");
-                }
-                send.message(str.toString());
-                new Keyboard(Bot.this).printButton(Message.selectActive, StartPoint.STUDY_WORDS);
-                break;
-            }
         }
     }
-
 
     public String getCHAT_ID() {
         return CHAT_ID;
@@ -116,6 +63,31 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return "5090214861:AAEMtwQNUZm_u8ainDOmm-18Ef9aSnyGOrE";
+    }
+
+    private void createNewThread(Update update) {
+        for(int i = 0; i < userList.size(); i++) {
+            if(userList.get(i).getCHAT_ID().equals(update.getMessage().getChatId().toString()) && userList.get(i).getState().equals(Thread.State.WAITING)) {
+                log.info("Reload thread with CHAT_ID = " + update.getMessage().getChatId());
+                synchronized (this) {
+                    userList.get(i).interrupt();
+                }
+                userList.remove(i);
+            }
+        }
+        flag = "";
+        CHAT_ID = update.getMessage().getChatId().toString();
+        log.info("Create new thread with CHAT_ID = " + CHAT_ID);
+        new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
+        ThreadUser user = new ThreadUser();
+        user.setCHAT_ID(CHAT_ID);
+        user.setWordList(wordService.getAll());
+        user.setUpdate(update);
+        user.setFlag(flag);
+        user.setBot(Bot.this);
+        user.start();
+        userList.add(user);
+
     }
 }
 

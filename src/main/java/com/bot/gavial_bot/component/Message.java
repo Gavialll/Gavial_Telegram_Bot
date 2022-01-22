@@ -14,6 +14,7 @@ public class Message {
     public static String answer(int result, int index, int size) {
         return "Result:      " + result + " ✅\n" + "Question: " + index + "/" + size + "\uD83D\uDCC8" + "\n➖➖➖➖➖➖➖➖➖➖➖";
     }
+
     public static String answer(int index, int size) {
         return "Answer is incorrect ❌\n" + "Question: " + index + "/" + size + "\uD83D\uDCC8" + "\n➖➖➖➖➖➖➖➖➖➖➖";
     }
