@@ -1,10 +1,12 @@
 package com.bot.gavial_bot.controller;
 
 import com.bot.gavial_bot.component.*;
+import com.bot.gavial_bot.model.Sentence;
 import com.bot.gavial_bot.model.Word;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +20,7 @@ public class ThreadUser extends Thread {
     private Bot bot;
     private String CHAT_ID;
     private List<Word> wordList;
+    private List<Sentence> sentenceList;
 
     @SneakyThrows
     @Override
@@ -39,54 +42,22 @@ public class ThreadUser extends Thread {
 
             switch(flag) {
                 case CallbackData.STUDY_WORDS: {
-                    log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Run");
-                    Send send = new Send(bot, CHAT_ID);
-                    int result = 0;
-                    int index = 0;
-                    int question = 10;
-                    Collections.shuffle(wordList);
-                    for(Word word : wordList){
-                        send.message("Translate word: «" + word.getUkraine().toUpperCase(Locale.ROOT) + "»❔");
-
-                        log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Wait");
-                        synchronized(this) {
-                            try {
-                                this.wait();
-                            } catch (InterruptedException e) {
-                                flag = "";
-                                return;
-                            }
-                        }
-
-                        if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(word.getEnglish())){
-                            send.message(Message.answer(++result, ++index, question));
-                        }else {
-                            send.message(Message.answer(++index, question));
-                        }
-                        if(question == index) {
-                            log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Finish");
-                            if(result < 5) bot.execute(Sticker.get(Random.random(1, 19).toString(), bot.getCHAT_ID()));
-                            if(result >= 5 && result <= 10) bot.execute(Sticker.get(Random.random(1, 19).toString(), bot.getCHAT_ID()));
-                            if(result > 15) bot.execute(Sticker.get("20", bot.getCHAT_ID()));
-
-                            send.message(Message.printResult(result));
-                            new Keyboard(bot).printButton(Message.selectActive,StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-                            flag = "";
-                            break;
-                        }
-                    }
+                    studyWords();
                     break;
                 }
                 case CallbackData.GET_ALL: {
-                    log.info(StartPoint.GET_ALL.getCallbackData() + ". Print all words");
-                    StringBuilder str = new StringBuilder();
-                    for(Word word : wordList) {
-                        str.append(word.getEnglish() + " - " + word.getUkraine() + "\n\n");
-                    }
-                    new Send(bot, CHAT_ID).message(str.toString());
-                    new Keyboard(bot).printButton(Message.selectActive, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-                    flag = "";
+//                    log.info(StartPoint.GET_ALL.getCallbackData() + ". Print all words");
+//                    StringBuilder str = new StringBuilder();
+//                    for(Word word : wordList) {
+//                        str.append(word.getEnglish() + " - " + word.getUkraine() + "\n\n");
+//                    }
+//                    new Send(bot, CHAT_ID).message(str.toString());
+//                    new Keyboard(bot).printButton(Message.selectActive, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
+//                    flag = "";
                     break;
+                }
+                case CallbackData.STUDY_SENTENCES:{
+                    studySentences();
                 }
             }
         }
@@ -98,6 +69,14 @@ public class ThreadUser extends Thread {
 
     public void setCHAT_ID(String CHAT_ID) {
         this.CHAT_ID = CHAT_ID;
+    }
+
+    public List<Sentence> getSentenceList() {
+        return sentenceList;
+    }
+
+    public void setSentenceList(List<Sentence> sentenceList) {
+        this.sentenceList = sentenceList;
     }
 
     public String getCHAT_ID() {
@@ -136,5 +115,88 @@ public class ThreadUser extends Thread {
     @Override
     public int hashCode() {
         return Objects.hash(bot, CHAT_ID);
+    }
+
+    public void studySentences() throws TelegramApiException {
+        log.info(StartPoint.STUDY_SENTENCES.getCallbackData() + " Status: Run");
+        Send send = new Send(bot, CHAT_ID);
+        int result = 0;
+        int index = 0;
+        int question = 10;
+        Collections.shuffle(sentenceList);
+        for(int i = 0; i < sentenceList.size(); i++) {
+            Sentence sentence = sentenceList.get(i);
+            send.message(Message.printQuestion(sentence.getUkraine()));
+
+            log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Wait");
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch(InterruptedException e) {
+                    flag = "";
+                    return;
+                }
+            }
+
+            if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(sentence.getEnglish())) {
+                send.message(Message.answer(++result, ++index, question));
+                sentenceList.remove(i);
+            } else {
+                send.message(Message.answer(++index, question, sentence.getEnglish()));
+            }
+            if(question == index) {
+                log.info(StartPoint.STUDY_SENTENCES.getCallbackData() + " Status: Finish");
+                if(result < 5) bot.execute(Sticker.get(Random.random(1, 19).toString(), bot.getCHAT_ID()));
+                if(result >= 5 && result <= 10) bot.execute(Sticker.get(Random.random(1, 19).toString(), bot.getCHAT_ID()));
+                if(result > 15) bot.execute(Sticker.get("20", bot.getCHAT_ID()));
+
+                send.message(Message.printResult(result));
+                new Keyboard(bot).printButton(Message.selectActive, StartPoint.STUDY_WORDS, StartPoint.STUDY_SENTENCES, StartPoint.GET_ALL);
+                flag = "";
+                break;
+            }
+        }
+    }
+
+    public void studyWords() throws TelegramApiException {
+        log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Run");
+        Send send = new Send(bot, CHAT_ID);
+        int result = 0;
+        int index = 0;
+        int question = 10;
+        Collections.shuffle(wordList);
+        for(int i = 0; i < wordList.size(); i++) {
+            Word word = wordList.get(i);
+            send.message(Message.printQuestion(word.getUkraine()));
+
+            log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Wait");
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch(InterruptedException e) {
+                    flag = "";
+                    return;
+                }
+            }
+
+            if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(word.getEnglish())) {
+                send.message(Message.answer(++ result, ++ index, question));
+                wordList.remove(i);
+            } else {
+                send.message(Message.answer(++ index, question, word.getEnglish()));
+            }
+            if(question == index) {
+                log.info(StartPoint.STUDY_WORDS.getCallbackData() + " Status: Finish");
+                if(result < 5) bot.execute(Sticker.get(Random.random(1, 19).toString(), bot.getCHAT_ID()));
+                if(result >= 5 && result <= 10) bot.execute(Sticker.get(Random.random(1, 19).toString(), bot.getCHAT_ID()));
+                if(result > 15) bot.execute(Sticker.get("20", bot.getCHAT_ID()));
+
+                send.message(Message.printResult(result));
+                new Keyboard(bot).printButton(Message.selectActive, StartPoint.STUDY_WORDS, StartPoint.STUDY_SENTENCES, StartPoint.GET_ALL);
+                flag = "";
+                System.out.println(wordList.size());
+                break;
+            }
+        }
     }
 }

@@ -2,7 +2,8 @@ package com.bot.gavial_bot.component;
 
 public enum StartPoint {
     STUDY_WORDS ("Study words \uD83D\uDCDA", CallbackData.STUDY_WORDS),
-    START ("Start", CallbackData.START),
+    STUDY_SENTENCES ("Study sentences \uD83D\uDCDA", CallbackData.STUDY_SENTENCES),
+    QUIZ ("Start quiz", CallbackData.QUIZ),
     GET_ALL ("All words", CallbackData.GET_ALL);
 
     private final String name;
