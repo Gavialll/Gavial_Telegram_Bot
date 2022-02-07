@@ -11,7 +11,7 @@ public class Message {
     public static final String hello = "Hi✋\uD83D\uDC4B✋ \nMy name Gavial \nI'm a bot\uD83E\uDDBE for learning English words\uD83D\uDCD6";
 
     public static String printResult(int result) {
-        return "You have : " + result + "points \uD83C\uDF7E\uD83C\uDF7E\uD83C\uDF7E";
+        return "You have: " + result + "points \uD83C\uDF7E\uD83C\uDF7E\uD83C\uDF7E";
     }
 
     public static String printQuestion (String question){

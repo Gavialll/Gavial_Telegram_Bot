@@ -37,6 +37,10 @@ public class Sentence{
         this.ukraine = ukraine;
     }
 
+    public long getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Sentence{" + "id=" + id + ", english='" + english + '\'' + ", ukraine='" + ukraine + '\'' + '}';
