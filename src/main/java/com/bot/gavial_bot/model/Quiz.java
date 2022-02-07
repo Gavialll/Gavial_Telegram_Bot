@@ -10,10 +10,7 @@ import lombok.Data;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,8 +25,11 @@ public class Quiz {
     private Integer score;
     private Boolean quizStatusSentences;
     private Boolean quizStatusWords;
+    private Boolean quizStatusSprint;
     private Integer iterator;
     private Long questionId;
+    @Column(nullable = false)
+    private Integer sprintMaxScore = 0;
 
     public Quiz clearFields(){
         this.score = 0;
@@ -37,7 +37,44 @@ public class Quiz {
         this.questionId = 0L;
         this.quizStatusSentences = false;
         this.quizStatusWords = false;
+        this.quizStatusSprint = false;
         return Quiz.this;
+    }
+
+    public void sprint(Bot bot, Update update, UserService userService, WordService sentenceService) throws TelegramApiException {
+        User user = userService.getById(Long.parseLong(bot.getCHAT_ID()));
+        if(update.hasMessage()) {
+            int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
+
+
+            if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(sentenceService.getById(user.getQuiz().getQuestionId()).getEnglish())) {
+                score++;
+                user.getQuiz().setScore(score);
+                update.getMessage().getMessageId();
+            } else {
+                if(user.getQuiz().getSprintMaxScore() < score) {
+                    user.getQuiz().setSprintMaxScore(score);
+                }
+
+                new Keyboard(bot).printButton(Message.selectActive, StartPoint.FINISH, StartPoint.TRY_AGAIN);
+
+                user.getQuiz().clearFields();
+                userService.save(user);
+                return;
+            }
+        }
+
+        Integer iterator = user.getQuiz().getIterator();
+        List<Word> sentenceList = sentenceService.getAll();
+        Integer random = Random.random(0, sentenceList.size() -1);
+        Word sentence = sentenceList.get(random);
+
+        new Send(bot).message(Message.printQuestion(sentence.getUkraine()));
+        user.getQuiz().setQuestionId(sentence.getId());
+        iterator++;
+        user.getQuiz().setIterator(iterator);
+
+        userService.save(user);
     }
 
     public void sentences(Bot bot, Update update, SentenceService sentenceService, UserService userService) throws TelegramApiException {

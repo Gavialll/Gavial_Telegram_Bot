@@ -6,7 +6,6 @@ import com.bot.gavial_bot.component.StartPoint;
 import com.bot.gavial_bot.component.Sticker;
 import com.bot.gavial_bot.model.Quiz;
 import com.bot.gavial_bot.model.User;
-import com.bot.gavial_bot.service.QuizService;
 import com.bot.gavial_bot.service.SentenceService;
 import com.bot.gavial_bot.service.UserService;
 import com.bot.gavial_bot.service.WordService;
@@ -24,8 +23,6 @@ public class Bot extends TelegramLongPollingBot {
     private SentenceService sentenceService;
     @Autowired
     private WordService wordService;
-    @Autowired
-    private QuizService quizService;
     @Autowired
     private UserService userService;
     private String CHAT_ID;
@@ -45,7 +42,7 @@ public class Bot extends TelegramLongPollingBot {
                 user.getQuiz().clearFields();
                 userService.save(user);
             }
-            new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_SENTENCES, StartPoint.STUDY_WORDS);
+            new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_SENTENCES, StartPoint.STUDY_WORDS, StartPoint.STUDY_SPRINT);
         }
 
         if(update.hasMessage()){
@@ -53,19 +50,29 @@ public class Bot extends TelegramLongPollingBot {
         }
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
+            User user = userService.getById(Long.parseLong(CHAT_ID));
+            user.getQuiz().clearFields();
 
-            if(update.getCallbackQuery().getData().equals(StartPoint.STUDY_SENTENCES.getCallbackData())) {
-                User user = userService.getById(Long.parseLong(CHAT_ID));
-                user.getQuiz().clearFields();
-                user.getQuiz().setQuizStatusSentences(true);
-                userService.save(user);
+            switch(update.getCallbackQuery().getData()){
+                case "/studyWords": {
+                    user.getQuiz().setQuizStatusWords(true);
+                    break;
+                }
+                case "/studySentence": {
+                    user.getQuiz().setQuizStatusSentences(true);
+                    break;
+                }
+                case "/studySprint": {
+                    user.getQuiz().setQuizStatusSprint(true);
+                    break;
+                }
+                case "/finish": {
+                    user.getQuiz().clearFields();
+                    new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_SENTENCES, StartPoint.STUDY_WORDS, StartPoint.STUDY_SPRINT);
+                    break;
+                }
             }
-            if(update.getCallbackQuery().getData().equals(StartPoint.STUDY_WORDS.getCallbackData())) {
-                User user = userService.getById(Long.parseLong(CHAT_ID));
-                user.getQuiz().clearFields();
-                user.getQuiz().setQuizStatusWords(true);
-                userService.save(user);
-            }
+            userService.save(user);
         }
 
         User user = userService.getById(Long.parseLong(CHAT_ID));
@@ -75,6 +82,9 @@ public class Bot extends TelegramLongPollingBot {
         }
         if(user.getQuiz().getQuizStatusWords()) {
             new Quiz().words(Bot.this, update, wordService, userService);
+        }
+        if(user.getQuiz().getQuizStatusSprint()){
+            new Quiz().sprint(Bot.this, update, userService, wordService);
         }
     }
 

@@ -19,8 +19,8 @@ public class User {
     public User() {
     }
 
-    public User(Long chatId, Quiz qiuz) {
+    public User(Long chatId, Quiz quiz) {
         this.chatId = chatId;
-        this.quiz = qiuz;
+        this.quiz = quiz;
     }
 }
