@@ -1,4 +1,4 @@
-package com.bot.gavial_bot.model;
+package com.bot.gavial_bot.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,7 +7,6 @@ import javax.persistence.Id;
 
 @Entity
 public class Word{
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

@@ -20,7 +20,7 @@ public class Keyboard {
         this.bot = bot;
     }
 
-    public Keyboard printButton(String message, StartPoint... arr){
+    public Keyboard printButton(String message, Button... arr){
         //it is initialization keyboard
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
@@ -34,8 +34,11 @@ public class Keyboard {
             InlineKeyboardButton btn = new InlineKeyboardButton();
             btn.setText(arr[i].getName());
             btn.setCallbackData(arr[i].getCallbackData());
+
             firstRow.add(btn);
+
             rowList.add(firstRow);
+
             inlineKeyboardMarkup.setKeyboard(rowList);
         }
 
@@ -50,6 +53,10 @@ public class Keyboard {
             e.printStackTrace();
         }
         return Keyboard.this;
+    }
+
+    public Keyboard printMenu(){
+        return printButton(Message.hello, Button.STUDY_SENTENCES, Button.STUDY_WORDS, Button.STUDY_SPRINT, Button.STUDY_IRREGULAR_VERB);
     }
 
     public Keyboard MenuKeyboard(String message, String... str) {

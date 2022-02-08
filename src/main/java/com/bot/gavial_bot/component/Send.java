@@ -7,15 +7,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class Send {
     private Bot bot;
 
-    public void message(String message){
+    public Integer message(String message){
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(bot.getCHAT_ID());
         sendMessage.setText(message);
         try {
-            bot.execute(sendMessage);
+          return bot.execute(sendMessage).getMessageId();
         } catch(TelegramApiException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public Send(Bot bot) {

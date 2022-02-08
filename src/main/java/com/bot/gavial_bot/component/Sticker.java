@@ -37,13 +37,7 @@ public class Sticker{
             String[] good = "20 18 14 9 7 5 4 3".split(" ");
             name = good[Random.random(0, good.length -1)];
         }
-            File file = new File("/Users/andrijdutko/Desktop/Gavial_Bot/src/main/resources/" + name + ".tgs");
-            InputFile inputFile = new InputFile();
-            inputFile.setMedia(file);
-            SendSticker sendSticker = new SendSticker();
-            sendSticker.setSticker(inputFile);
-            sendSticker.setChatId(bot.getCHAT_ID());
-            bot.execute(sendSticker);
+        send(name);
     }
 
     public Sticker(Bot bot) {

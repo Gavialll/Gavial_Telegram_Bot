@@ -1,4 +1,4 @@
-package com.bot.gavial_bot.model;
+package com.bot.gavial_bot.entity;
 
 import lombok.Data;
 
@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Data
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
