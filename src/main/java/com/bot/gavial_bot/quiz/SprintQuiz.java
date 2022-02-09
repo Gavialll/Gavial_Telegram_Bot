@@ -27,7 +27,7 @@ public class SprintQuiz {
                         .builder()
                         .chatId(bot.getCHAT_ID())
                         .text("«" + update.getMessage().getText().toUpperCase(Locale.ROOT) + "» ✅")
-                        .messageId(user.getQuiz().getMessId())
+                        .messageId(user.getQuiz().getMessageId())
                         .build());
             } else {
                 if(user.getQuiz().getSprintMaxScore() < score) user.getQuiz().setSprintMaxScore(score);
@@ -45,7 +45,7 @@ public class SprintQuiz {
         Word sentence = sentenceList.get(random);
 
         Integer id = new Send(bot).message(Message.printQuestion(sentence.getUkraine()));
-        user.getQuiz().setMessId(id);
+        user.getQuiz().setMessageId(id);
         user.getQuiz().setQuestionId(sentence.getId());
         iterator++;
         user.getQuiz().setIterator(iterator);

@@ -23,7 +23,9 @@ public class Quiz {
     private Integer sprintMaxScore = 0;
     @Column(nullable = false)
     private Integer irregularVerbMaxScore = 0;
-    private Integer messId = 0;
+    private Integer messageId = 0;
+    @Column(nullable = false)
+    private String irregularVerbAnswer = "";
 
     public Quiz clearFields(){
         this.score = 0;
@@ -33,6 +35,7 @@ public class Quiz {
         this.quizStatusWords = false;
         this.quizStatusSprint = false;
         this.quizStatusIrregularVerb = false;
+        this.irregularVerbAnswer = "";
         return Quiz.this;
     }
 

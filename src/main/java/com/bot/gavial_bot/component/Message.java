@@ -14,8 +14,11 @@ public class Message {
         return "You result: " + result + " \uD83C\uDF7E\uD83C\uDF7E\uD83C\uDF7E";
     }
 
+    public static String printResult(Integer score, String rightAnswer, Integer maxScore, String youAnswer){
+        return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect "+ youAnswer + "\nRight answer: «" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";
+    }
     public static String printResult(Integer score, String rightAnswer, Integer maxScore){
-        return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect ❌\nRight answer: «" + rightAnswer + "» ✅\nMax result: " + maxScore+ " \uD83C\uDFC6";
+        return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect ❌\nRight answer: «" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";
     }
 
     public static String printQuestion (String question){

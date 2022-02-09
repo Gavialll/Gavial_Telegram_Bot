@@ -19,4 +19,13 @@ public class IrregularVerb {
     private String present;
     private String future;
     private String ukraine;
+
+    @Override
+    public String toString() {
+        return present.replace("to ", "").trim() + " " + past + " " + future;
+    }
+
+    public String getPresent() {
+        return present.replace("to ", "").trim();
+    }
 }
