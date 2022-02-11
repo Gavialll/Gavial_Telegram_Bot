@@ -2,11 +2,7 @@ package com.bot.gavial_bot.component;
 
 import com.bot.gavial_bot.controller.Bot;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.io.File;
 
 @Component
 public class Sticker{
@@ -14,13 +10,13 @@ public class Sticker{
     private Bot bot;
 
     public void send(String name) throws TelegramApiException {
-        File file = new File("/src/main/resources/" + name + ".tgs");
-        InputFile inputFile = new InputFile();
-        inputFile.setMedia(file);
-        SendSticker sendSticker = new SendSticker();
-        sendSticker.setSticker(inputFile);
-        sendSticker.setChatId(bot.getCHAT_ID());
-        bot.execute(sendSticker);
+//        File file = new File("/src/main/resources/" + name + ".tgs");
+//        InputFile inputFile = new InputFile();
+//        inputFile.setMedia(file);
+//        SendSticker sendSticker = new SendSticker();
+//        sendSticker.setSticker(inputFile);
+//        sendSticker.setChatId(bot.getCHAT_ID());
+//        bot.execute(sendSticker);
     }
 
     public void send(Integer score) throws TelegramApiException {
