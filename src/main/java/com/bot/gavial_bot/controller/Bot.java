@@ -43,7 +43,6 @@ public class Bot extends TelegramLongPollingBot {
         if(update.hasMessage()){
             CHAT_ID = update.getMessage().getChatId().toString();
         }
-
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
             Person person = userService.getById(Long.parseLong(CHAT_ID));
