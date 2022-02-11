@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class IrregularVerb {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String past;
     private String present;

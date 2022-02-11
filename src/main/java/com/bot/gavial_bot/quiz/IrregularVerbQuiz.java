@@ -3,7 +3,7 @@ package com.bot.gavial_bot.quiz;
 import com.bot.gavial_bot.component.*;
 import com.bot.gavial_bot.controller.Bot;
 import com.bot.gavial_bot.entity.IrregularVerb;
-import com.bot.gavial_bot.entity.User;
+import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.service.IrregularVerbService;
 import com.bot.gavial_bot.service.UserService;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -15,57 +15,58 @@ import java.util.Locale;
 
 public class IrregularVerbQuiz {
     public void start(Bot bot, Update update, UserService userService, IrregularVerbService irregularVerbService) throws TelegramApiException {
-        User user = userService.getById(Long.parseLong(bot.getCHAT_ID()));
+        Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
         List<IrregularVerb> irregularVerbList = irregularVerbService.getAll();
-        Integer score = user.getQuiz().getScore();
-        Integer iterator = user.getQuiz().getIterator();
+        Integer score = person.getQuiz().getScore();
+        Integer iterator = person.getQuiz().getIterator();
 
-        if(user.getQuiz().getIterator() == 0){
+        if(person.getQuiz().getIterator() == 0){
             Integer random = Random.random(0, irregularVerbList.size() - 1);
             Integer id = new Send(bot).message("Write all forms irregular verb: " + irregularVerbList.get(random).getUkraine().toUpperCase(Locale.ROOT));
-            user.getQuiz().setMessageId(id);
-            user.getQuiz().setQuestionId(irregularVerbList.get(random).getId());
+            person.getQuiz().setMessageId(id);
+            person.getQuiz().setQuestionId(irregularVerbList.get(random).getId());
             iterator++;
-            user.getQuiz().setIterator(iterator);
-            userService.save(user);
+            person.getQuiz().setIterator(iterator);
+            userService.save(person);
         }else {
             iterator++;
-            user.getQuiz().setIterator(iterator);
-            String newResult = user.getQuiz().getIrregularVerbAnswer() + " " + update.getMessage().getText() + " ";
-            user.getQuiz().setIrregularVerbAnswer(newResult.trim());
-            userService.save(user);
+            person.getQuiz().setIterator(iterator);
+            String newResult = person.getQuiz().getIrregularVerbAnswer() + " " + update.getMessage().getText().trim() + " ";
+            person.getQuiz().setIrregularVerbAnswer(newResult.trim());
+            userService.save(person);
 
-            if(user.getQuiz().getIterator() == 4) {
+            if(person.getQuiz().getIterator() == 4) {
                 if(update.hasMessage()) {
-                    IrregularVerb irregularVerb = irregularVerbService.get(user.getQuiz().getQuestionId());
+                    IrregularVerb irregularVerb = irregularVerbService.get(person.getQuiz().getQuestionId());
 
-                    if(irregularVerb.toString().equals(user.getQuiz().getIrregularVerbAnswer())) {
+                    if(irregularVerb.toString().toLowerCase(Locale.ROOT).equals(person.getQuiz().getIrregularVerbAnswer().toLowerCase(Locale.ROOT))) {
                         score++;
-                        user.getQuiz().setScore(score);
+                        person.getQuiz().setScore(score);
                         bot.execute(EditMessageText
                                 .builder()
                                     .chatId(bot.getCHAT_ID()).text("«" + irregularVerb.toString().toUpperCase(Locale.ROOT) + "» ✅")
-                                    .messageId(user.getQuiz().getMessageId())
+                                    .messageId(person.getQuiz().getMessageId())
                                 .build());
-                        user.getQuiz().setIterator(0);
-                        user.getQuiz().setIrregularVerbAnswer("");
-                        userService.save(user);
+                        person.getQuiz().setIterator(0);
+                        person.getQuiz().setIrregularVerbAnswer("");
+                        userService.save(person);
                         start(bot, update, userService, irregularVerbService);
                     } else {
-                        if(user.getQuiz().getIrregularVerbMaxScore() < score) user.getQuiz().setIrregularVerbMaxScore(score);
+                        if(person.getQuiz().getIrregularVerbMaxScore() < score) person.getQuiz().setIrregularVerbMaxScore(score);
 
-                        String[] irregularVerbs = user.getQuiz().getIrregularVerbAnswer().split(" ");
+                        String[] irregularVerbs = person.getQuiz().getIrregularVerbAnswer().toLowerCase(Locale.ROOT).split(" ");
                         String good = "✅";
                         String bad = "❌";
                         String[] action = {bad, bad, bad};
-                        if(irregularVerb.getPresent().equals(irregularVerbs[0])) action[0] = good;
-                        if(irregularVerb.getPast().trim().equals(irregularVerbs[1])) action[1] = good;
-                        if(irregularVerb.getFuture().trim().equals(irregularVerbs[2])) action[2] = good;
+                        if(irregularVerb.getPresent().toLowerCase(Locale.ROOT).equals(irregularVerbs[0])) action[0] = good;
+                        if(irregularVerb.getPast().toLowerCase(Locale.ROOT).trim().equals(irregularVerbs[1])) action[1] = good;
+                        if(irregularVerb.getFuture().toLowerCase(Locale.ROOT).trim().equals(irregularVerbs[2])) action[2] = good;
 
-                        new Send(bot).message(Message.printResult(score, irregularVerb.getPresent() + " " + irregularVerb.getPast() + " " + irregularVerb.getFuture(), user.getQuiz().getIrregularVerbMaxScore(),irregularVerbs[0] + action[0] + ", " + irregularVerbs[1] + action[1] + ", " + irregularVerbs[2] + action[2]));
+                        String question = irregularVerb.getPresent() + " " + irregularVerb.getPast() + " " + irregularVerb.getFuture();
+                        new Send(bot).message(Message.printResult(score, question.toUpperCase(Locale.ROOT), person.getQuiz().getIrregularVerbMaxScore(),irregularVerbs[0] + action[0] + ", " + irregularVerbs[1] + action[1] + ", " + irregularVerbs[2] + action[2]));
                         new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_IRREGULAR_VERB, Button.FINISH);
-                        user.getQuiz().clearFields();
-                        userService.save(user);
+                        person.getQuiz().clearFields();
+                        userService.save(person);
                     }
                 }
             }

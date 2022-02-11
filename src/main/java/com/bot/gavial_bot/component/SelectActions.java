@@ -1,7 +1,7 @@
 package com.bot.gavial_bot.component;
 
 import com.bot.gavial_bot.controller.Bot;
-import com.bot.gavial_bot.entity.User;
+import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.quiz.IrregularVerbQuiz;
 import com.bot.gavial_bot.quiz.SentenceQuiz;
 import com.bot.gavial_bot.quiz.SprintQuiz;
@@ -13,17 +13,17 @@ public class SelectActions {
     private Bot bot;
     private Update update;
 
-    public void select(User user) throws TelegramApiException {
-        if(user.getQuiz().getQuizStatusSentences()) {
+    public void select(Person person) throws TelegramApiException {
+        if(person.getQuiz().getQuizStatusSentences()) {
             new SentenceQuiz().start(bot, update, bot.getSentenceService(), bot.getUserService());
         }
-        if(user.getQuiz().getQuizStatusWords()) {
+        if(person.getQuiz().getQuizStatusWords()) {
             new WordsQuiz().start(bot, update, bot.getWordService(), bot.getUserService());
         }
-        if(user.getQuiz().getQuizStatusSprint()){
+        if(person.getQuiz().getQuizStatusSprint()){
             new SprintQuiz().start(bot, update, bot.getUserService(), bot.getWordService());
         }
-        if(user.getQuiz().getQuizStatusIrregularVerb()){
+        if(person.getQuiz().getQuizStatusIrregularVerb()){
             new IrregularVerbQuiz().start(bot, update, bot.getUserService(), bot.getIrregularVerbService());
         }
     }

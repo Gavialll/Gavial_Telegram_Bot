@@ -3,8 +3,8 @@ package com.bot.gavial_bot.controller;
 import com.bot.gavial_bot.component.Keyboard;
 import com.bot.gavial_bot.component.SelectActions;
 import com.bot.gavial_bot.component.Sticker;
+import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.entity.Quiz;
-import com.bot.gavial_bot.entity.User;
 import com.bot.gavial_bot.service.IrregularVerbService;
 import com.bot.gavial_bot.service.SentenceService;
 import com.bot.gavial_bot.service.UserService;
@@ -45,38 +45,38 @@ public class Bot extends TelegramLongPollingBot {
         }
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
-            User user = userService.getById(Long.parseLong(CHAT_ID));
-            user.getQuiz().clearFields();
+            Person person = userService.getById(Long.parseLong(CHAT_ID));
+            person.getQuiz().clearFields();
 
             switch(update.getCallbackQuery().getData()){
                 case "/studyWords": {
-                    user.getQuiz().setQuizStatusWords(true);
+                    person.getQuiz().setQuizStatusWords(true);
                     break;
                 }
                 case "/irregularVerb": {
-                    user.getQuiz().setQuizStatusIrregularVerb(true);
+                    person.getQuiz().setQuizStatusIrregularVerb(true);
                     break;
                 }
                 case "/studySentence": {
-                    user.getQuiz().setQuizStatusSentences(true);
+                    person.getQuiz().setQuizStatusSentences(true);
                     break;
                 }
                 case "/studySprint": {
-                    user.getQuiz().setQuizStatusSprint(true);
+                    person.getQuiz().setQuizStatusSprint(true);
                     break;
                 }
                 case "/finish": {
-                    user.getQuiz().clearFields();
+                    person.getQuiz().clearFields();
                     new Keyboard(Bot.this).printMenu();
                     break;
                 }
             }
-            userService.save(user);
+            userService.save(person);
         }
 
-        User user = userService.getById(Long.parseLong(CHAT_ID));
+        Person person = userService.getById(Long.parseLong(CHAT_ID));
 
-        new SelectActions(Bot.this, update).select(user);
+        new SelectActions(Bot.this, update).select(person);
 
     }
 
@@ -84,11 +84,11 @@ public class Bot extends TelegramLongPollingBot {
         new Sticker(Bot.this).send("16");
         Long chatId = update.getMessage().getChatId();
         if(!userService.hasUser(chatId)) {
-            userService.save(new User(chatId, new Quiz().clearFields()));
+            userService.save(new Person(chatId, new Quiz().clearFields()));
         } else {
-            User user = userService.getById(Long.parseLong(CHAT_ID));
-            user.getQuiz().clearFields();
-            userService.save(user);
+            Person person = userService.getById(Long.parseLong(CHAT_ID));
+            person.getQuiz().clearFields();
+            userService.save(person);
         }
         new Keyboard(Bot.this).printMenu();
     }
