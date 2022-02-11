@@ -16,7 +16,6 @@
     <name>Gavial_Bot</name>
     <description>Gavial_Bot</description>
     <properties>
-        <argLine>-Xmx1024m -XX:MaxPermSize=512m -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
         <java.version>11</java.version>
     </properties>
     <dependencies>
