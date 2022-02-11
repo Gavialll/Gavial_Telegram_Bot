@@ -1,7 +1,9 @@
 package com.bot.gavial_bot.component;
 
 public interface CallbackData {
-    String START = "/start";
     String STUDY_WORDS = "/studyWords";
-    String GET_ALL = "/getAll";
+    String STUDY_SENTENCES = "/studySentence";
+    String STUDY_SPRINT = "/studySprint";
+    String FINISH = "/finish";
+    String STUDY_IRREGULAR_VERB = "/irregularVerb";
 }

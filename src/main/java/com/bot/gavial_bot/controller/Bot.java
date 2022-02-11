@@ -1,84 +1,96 @@
 package com.bot.gavial_bot.controller;
 
-import com.bot.gavial_bot.Quiz;
-import com.bot.gavial_bot.component.*;
-import com.bot.gavial_bot.model.User;
-import com.bot.gavial_bot.model.Word;
-import com.bot.gavial_bot.newUser;
-import com.bot.gavial_bot.repository.UserRepository;
+import com.bot.gavial_bot.component.Keyboard;
+import com.bot.gavial_bot.component.SelectActions;
+import com.bot.gavial_bot.component.Sticker;
+import com.bot.gavial_bot.entity.Quiz;
+import com.bot.gavial_bot.entity.User;
+import com.bot.gavial_bot.service.IrregularVerbService;
+import com.bot.gavial_bot.service.SentenceService;
+import com.bot.gavial_bot.service.UserService;
 import com.bot.gavial_bot.service.WordService;
+import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
 @Component
+@Data
 public class Bot extends TelegramLongPollingBot {
     @Autowired
-    private UserRepository userRepository;
+    private SentenceService sentenceService;
+    @Autowired
+    private IrregularVerbService irregularVerbService;
     @Autowired
     private WordService wordService;
+    @Autowired
+    private UserService userService;
     private String CHAT_ID;
-    private String flag = "";
-    private Quiz quiz;
-    private final Send send = new Send(Bot.this);
 
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
+
+        if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
+            CHAT_ID = update.getMessage().getChatId().toString();
+            startBot(update);
+        }
         if(update.hasMessage()){
             CHAT_ID = update.getMessage().getChatId().toString();
         }
-        if(update.hasCallbackQuery()){
-            CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
-        }
-        startNewUser(update);
-    }
-
-    public void startNewUser(Update update){
-        if(update.hasMessage() && update.getMessage().getText().equals("/start")) {
-            CHAT_ID = update.getMessage().getChatId().toString();
-            new Keyboard(Bot.this).printButton(Message.hello, StartPoint.STUDY_WORDS, StartPoint.GET_ALL);
-//            System.out.println(update.getMessage().getChatId());
-        }
-
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
-            flag = update.getCallbackQuery().getData();
-//            System.out.println(update.getCallbackQuery().getMessage().getChatId().toString());
-        }
+            User user = userService.getById(Long.parseLong(CHAT_ID));
+            user.getQuiz().clearFields();
 
-        if(quiz != null && quiz.getState().equals(Thread.State.WAITING)) {
-            quiz.setUpdate(update);
-        }
-
-        switch(flag) {
-            case CallbackData.STUDY_WORDS: {
-                quiz = new Quiz();
-                quiz.setUpdate(update);
-                quiz.setWordList(wordService.getAll());
-                quiz.setBot(Bot.this);
-                quiz.start();
-                flag = "";
-                break;
-            }
-            case CallbackData.GET_ALL: {
-                StringBuilder str = new StringBuilder();
-                for(Word word : wordService.getAll()) {
-                    str.append(word.getEnglish() + " - " + word.getUkraine() + "\n\n");
+            switch(update.getCallbackQuery().getData()){
+                case "/studyWords": {
+                    user.getQuiz().setQuizStatusWords(true);
+                    break;
                 }
-                send.message(str.toString());
-                new Keyboard(Bot.this).printButton(Message.selectActive, StartPoint.STUDY_WORDS);
-                break;
+                case "/irregularVerb": {
+                    user.getQuiz().setQuizStatusIrregularVerb(true);
+                    break;
+                }
+                case "/studySentence": {
+                    user.getQuiz().setQuizStatusSentences(true);
+                    break;
+                }
+                case "/studySprint": {
+                    user.getQuiz().setQuizStatusSprint(true);
+                    break;
+                }
+                case "/finish": {
+                    user.getQuiz().clearFields();
+                    new Keyboard(Bot.this).printMenu();
+                    break;
+                }
             }
+            userService.save(user);
         }
+
+        User user = userService.getById(Long.parseLong(CHAT_ID));
+
+        new SelectActions(Bot.this, update).select(user);
+
     }
 
-    public void setCHAT_ID(String CHAT_ID) {
-        this.CHAT_ID = CHAT_ID;
+    private void startBot(Update update) throws TelegramApiException {
+        new Sticker(Bot.this).send("16");
+        Long chatId = update.getMessage().getChatId();
+        if(!userService.hasUser(chatId)) {
+            userService.save(new User(chatId, new Quiz().clearFields()));
+        } else {
+            User user = userService.getById(Long.parseLong(CHAT_ID));
+            user.getQuiz().clearFields();
+            userService.save(user);
+        }
+        new Keyboard(Bot.this).printMenu();
     }
 
     public String getCHAT_ID() {
@@ -95,18 +107,3 @@ public class Bot extends TelegramLongPollingBot {
         return "5090214861:AAEMtwQNUZm_u8ainDOmm-18Ef9aSnyGOrE";
     }
 }
-
-//it is sent audio file
-//    String userMessage = update.getMessage().getText().toLowerCase(Locale.ROOT);
-//            if(count == 0 || count == 5 || userMessage.equals("red hot")) {
-//                    File file = new File("/Users/andrijdutko/Desktop/Gavial_Bot/src/main/resources/Can t Stop   The Red Hot Chilli Peppers.mp3");
-//                    sendMessage("Ваш трек: " + file.getName());
-//
-//                    SendAudio sendAudio = new SendAudio();
-//                    InputFile inputFile = new InputFile(file);
-//                    sendAudio.setAudio(inputFile);
-//                    sendAudio.setChatId(CHAT_ID);
-//
-//                    execute(sendAudio);
-//                    count++;
-//                    }

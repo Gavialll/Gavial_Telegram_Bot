@@ -1,6 +1,4 @@
-package com.bot.gavial_bot.model;
-
-import org.springframework.stereotype.Controller;
+package com.bot.gavial_bot.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,21 +6,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Word{
-
+public class Sentence{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String english;
     private String ukraine;
 
-    public Word(String english, String ukraine) {
+    public Sentence(String english, String ukraine) {
         this.english = english;
         this.ukraine = ukraine;
     }
 
-    public Word() {
-
+    public Sentence() {
     }
 
     public String getEnglish() {
@@ -45,12 +41,8 @@ public class Word{
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
-        return "Word{" + "id=" + id + ", english='" + english + '\'' + ", ukraine='" + ukraine + '\'' + '}';
+        return "Sentence{" + "id=" + id + ", english='" + english + '\'' + ", ukraine='" + ukraine + '\'' + '}';
     }
 }
