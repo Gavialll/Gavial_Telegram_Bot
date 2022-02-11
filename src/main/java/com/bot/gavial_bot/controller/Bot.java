@@ -2,7 +2,6 @@ package com.bot.gavial_bot.controller;
 
 import com.bot.gavial_bot.component.Keyboard;
 import com.bot.gavial_bot.component.SelectActions;
-import com.bot.gavial_bot.component.Sticker;
 import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.entity.Quiz;
 import com.bot.gavial_bot.service.IrregularVerbService;
@@ -81,7 +80,7 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void startBot(Update update) throws TelegramApiException {
-        new Sticker(Bot.this).send("16");
+//        new Sticker(Bot.this).send("16");
         Long chatId = update.getMessage().getChatId();
         if(!userService.hasUser(chatId)) {
             userService.save(new Person(chatId, new Quiz().clearFields()));
