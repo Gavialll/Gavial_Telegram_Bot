@@ -1,6 +1,6 @@
 package com.bot.gavial_bot.service;
 
-import com.bot.gavial_bot.entity.User;
+import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,10 @@ public class UserService {
     public boolean hasUser(Long chatId){
         return userRepository.findByChatId(chatId) != null;
     }
-    public void save(User user){
-        userRepository.save(user);
+    public void save(Person person){
+        userRepository.save(person);
     }
-    public User getById(Long chatId){
+    public Person getById(Long chatId){
         return userRepository.findByChatId(chatId);
     }
 
