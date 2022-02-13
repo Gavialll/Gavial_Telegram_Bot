@@ -29,6 +29,7 @@ public class Quiz {
     @Column(nullable = false)
     private Boolean flagImgIrregularVerb;
 
+
     public Quiz clearFields(){
         this.score = 0;
         this.iterator = 0;
