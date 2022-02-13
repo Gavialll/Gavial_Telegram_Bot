@@ -26,7 +26,7 @@ public class Quiz {
     private Integer messageId = 0;
     @Column(nullable = false)
     private String irregularVerbAnswer = "";
-    @Column(columnDefinition = "true")
+    @Column(nullable = true, columnDefinition = "true")
     private Boolean flagImgIrregularVerb;
 
     public Quiz clearFields(){
