@@ -21,6 +21,7 @@ public class IrregularVerbQuiz {
         Integer iterator = person.getQuiz().getIterator();
 
         if(person.getQuiz().getIterator() == 0){
+            new Send(bot).Image("src/main/resources/Image/ExampleIrregularVerb.jpg");
             Integer random = Random.random(0, irregularVerbList.size() - 1);
             Integer id = new Send(bot).message("Write all forms irregular verb: " + irregularVerbList.get(random).getUkraine().toUpperCase(Locale.ROOT));
             person.getQuiz().setMessageId(id);
@@ -58,11 +59,11 @@ public class IrregularVerbQuiz {
                         String good = "✅";
                         String bad = "❌";
                         String[] action = {bad, bad, bad};
-                        if(irregularVerb.getPresent().toLowerCase(Locale.ROOT).equals(irregularVerbs[0])) action[0] = good;
+                        if(irregularVerb.getPresent().toLowerCase(Locale.ROOT).trim().equals(irregularVerbs[0])) action[0] = good;
                         if(irregularVerb.getPast().toLowerCase(Locale.ROOT).trim().equals(irregularVerbs[1])) action[1] = good;
                         if(irregularVerb.getFuture().toLowerCase(Locale.ROOT).trim().equals(irregularVerbs[2])) action[2] = good;
 
-                        String question = irregularVerb.getPresent() + " " + irregularVerb.getPast() + " " + irregularVerb.getFuture();
+                        String question = irregularVerb.getPresent() + ", " + irregularVerb.getPast() + ", " + irregularVerb.getFuture();
                         new Send(bot).message(Message.printResult(score, question.toUpperCase(Locale.ROOT), person.getQuiz().getIrregularVerbMaxScore(),irregularVerbs[0] + action[0] + ", " + irregularVerbs[1] + action[1] + ", " + irregularVerbs[2] + action[2]));
                         new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_IRREGULAR_VERB, Button.FINISH);
                         person.getQuiz().clearFields();

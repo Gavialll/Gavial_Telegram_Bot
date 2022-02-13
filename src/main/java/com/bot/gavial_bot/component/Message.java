@@ -6,8 +6,7 @@ import java.util.Locale;
 
 @Component
 public class Message {
-//                                               "I'm a bot🦾 for learning English words📖"
-    public static final String selectActive = "\uD83D\uDC47 \uD83D\uDC47 \uD83D\uDC47  Select an action  \uD83D\uDC47 \uD83D\uDC47 \uD83D\uDC47️";
+    public static final String selectActive = "\uD83D\uDC47 \uD83D\uDC47  Select an action  \uD83D\uDC47 \uD83D\uDC47️";
     public static final String hello = "Hi✋\uD83D\uDC4B✋ \nMy name Gavial \nI'm a bot\uD83E\uDDBE for learning English words\uD83D\uDCD6";
 
     public static String printResult(int result) {
@@ -15,7 +14,7 @@ public class Message {
     }
 
     public static String printResult(Integer score, String rightAnswer, Integer maxScore, String youAnswer){
-        return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect \n"+ youAnswer + "\nRight answer: \n«" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";
+        return "You result: " + score + " \uD83C\uDFC5\n" + "Max result: " + maxScore + " \uD83C\uDFC6" + "You answer:\n"+ youAnswer + "\nRight answer: \n" + rightAnswer;
     }
     public static String printResult(Integer score, String rightAnswer, Integer maxScore){
         return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect ❌\nRight answer:\n «" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";

@@ -18,7 +18,7 @@ public class WordsQuiz {
 
         if(update.hasMessage()) {
             int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
-            int questionsSize = 15;
+            int questionsSize = 10;
             if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(wordService.getById(person.getQuiz().getQuestionId()).getEnglish())) {
                 score++;
                 person.getQuiz().setScore(score);
