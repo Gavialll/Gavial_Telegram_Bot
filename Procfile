@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* com/bot/gavial_bot/GavialBotApplication.java
+web: java -jar target/Gavial_Bot
