@@ -31,6 +31,4 @@ public class Message {
     public static String answer(int index, int size, String answer) {
         return "Answer is incorrect ❌\n" + "Question: " + index + "/" + size + "\uD83D\uDCC8\n" + "Right answer: " + answer.toUpperCase(Locale.ROOT) + "\n➖➖➖➖➖➖➖➖➖➖➖";
     }
-
-
 }
