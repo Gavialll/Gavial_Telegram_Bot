@@ -14,7 +14,7 @@ public class Sticker{
     private Bot bot;
 
     public void send(String name) throws TelegramApiException {
-        File file = new File("/src/main/resources/" + name + ".tgs");
+        File file = new File("src/main/resources/" + name + ".tgs");
         InputFile inputFile = new InputFile();
         inputFile.setMedia(file);
         SendSticker sendSticker = new SendSticker();
