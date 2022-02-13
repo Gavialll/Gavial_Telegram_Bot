@@ -14,7 +14,7 @@ public class Message {
     }
 
     public static String printResult(Integer score, String rightAnswer, Integer maxScore, String youAnswer){
-        return "You result: " + score + " \uD83C\uDFC5\n" + "Max result: " + maxScore + " \uD83C\uDFC6" + "You answer:\n"+ youAnswer + "\nRight answer: \n" + rightAnswer;
+        return "You result: " + score + " \uD83C\uDFC5\n" + "Max result: " + maxScore + " \uD83C\uDFC6\n" + "You answer:\n"+ youAnswer + "\nRight answer: \n" + rightAnswer;
     }
     public static String printResult(Integer score, String rightAnswer, Integer maxScore){
         return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect ❌\nRight answer:\n «" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";
