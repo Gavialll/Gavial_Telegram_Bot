@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp build/staging:build/staging/* com.pengrad.Main
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* src/main/java/com/bot/gavial_bot/GavialBotApplication.java
