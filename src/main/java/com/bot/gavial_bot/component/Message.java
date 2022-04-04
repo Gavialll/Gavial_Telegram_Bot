@@ -6,18 +6,18 @@ import java.util.Locale;
 
 @Component
 public class Message {
-    public static final String selectActive = "\uD83D\uDC47 \uD83D\uDC47  Select an action  \uD83D\uDC47 \uD83D\uDC47️";
+    public static final String selectActive = "Select an action️";
     public static final String hello = "Hi✋\uD83D\uDC4B✋ \nMy name Gavial \nI'm a bot\uD83E\uDDBE for learning English words\uD83D\uDCD6";
 
     public static String printResult(int result) {
-        return "You result: " + result + " \uD83C\uDF7E\uD83C\uDF7E\uD83C\uDF7E";
+        return "You result: " + result + " \uD83C\uDFC6\uD83C\uDFC6\uD83C\uDFC6";
     }
 
     public static String printResult(Integer score, String rightAnswer, Integer maxScore, String youAnswer){
-        return "You result: " + score + " \uD83C\uDFC5\n" + "Max result: " + maxScore + " \uD83C\uDFC6\n" + "You answer:\n"+ youAnswer + "\nRight answer: \n" + rightAnswer;
+        return "You result: " + score + " \uD83C\uDFC5\n" + "Max result: " + maxScore + " \uD83C\uDFC6\n" + "You answer: "+ youAnswer + "\nRight answer: " + rightAnswer;
     }
     public static String printResult(Integer score, String rightAnswer, Integer maxScore){
-        return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect ❌\nRight answer:\n «" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";
+        return "You result: " + score + " \uD83C\uDFC5\nYou answer incorrect ❌\nRight answer: «" + rightAnswer + "»\nMax result: " + maxScore+ " \uD83C\uDFC6";
     }
 
     public static String printQuestion (String question){

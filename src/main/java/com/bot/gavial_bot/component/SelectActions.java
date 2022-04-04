@@ -2,10 +2,7 @@ package com.bot.gavial_bot.component;
 
 import com.bot.gavial_bot.controller.Bot;
 import com.bot.gavial_bot.entity.Person;
-import com.bot.gavial_bot.quiz.IrregularVerbQuiz;
-import com.bot.gavial_bot.quiz.SentenceQuiz;
-import com.bot.gavial_bot.quiz.SprintQuiz;
-import com.bot.gavial_bot.quiz.WordsQuiz;
+import com.bot.gavial_bot.quiz.*;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -14,6 +11,9 @@ public class SelectActions {
     private Update update;
 
     public void select(Person person) throws TelegramApiException {
+        if(person.getQuiz().getQuizStatusChoose()){
+            new ChooseQuiz().start(bot, update, bot.getSentenceService(), bot.getUserService());
+        }
         if(person.getQuiz().getQuizStatusSentences()) {
             new SentenceQuiz().start(bot, update, bot.getSentenceService(), bot.getUserService());
         }

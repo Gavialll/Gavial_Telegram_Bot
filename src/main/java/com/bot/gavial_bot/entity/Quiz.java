@@ -13,6 +13,7 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer score;
+    private Boolean quizStatusChoose;
     private Boolean quizStatusSentences;
     private Boolean quizStatusWords;
     private Boolean quizStatusSprint;
@@ -22,12 +23,17 @@ public class Quiz {
     @Column(nullable = false)
     private Integer sprintMaxScore = 0;
     @Column(nullable = false)
+    private Integer chooseMaxScore = 0;
+    @Column(nullable = false)
     private Integer irregularVerbMaxScore = 0;
     private Integer messageId = 0;
     @Column(nullable = false)
     private String irregularVerbAnswer = "";
     @Column(nullable = false)
     private Boolean flagImgIrregularVerb = true;
+    private Boolean flagChoose;
+    private String buttonsText = "";
+    private String sentenceText = "";
 
     public Quiz clearFields(){
         this.score = 0;
@@ -37,7 +43,11 @@ public class Quiz {
         this.quizStatusWords = false;
         this.quizStatusSprint = false;
         this.quizStatusIrregularVerb = false;
+        this.quizStatusChoose = false;
+        this.flagChoose = true;
         this.irregularVerbAnswer = "";
+        this.buttonsText = "";
+        this.sentenceText = "";
         return Quiz.this;
     }
 

@@ -1,5 +1,6 @@
 package com.bot.gavial_bot.controller;
 
+import com.bot.gavial_bot.component.Button;
 import com.bot.gavial_bot.component.Keyboard;
 import com.bot.gavial_bot.component.SelectActions;
 import com.bot.gavial_bot.component.Sticker;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -46,28 +48,49 @@ public class Bot extends TelegramLongPollingBot {
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
             Person person = userService.getById(Long.parseLong(CHAT_ID));
-            person.getQuiz().clearFields();
 
             switch(update.getCallbackQuery().getData()){
                 case "/studyWords": {
+                    person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusWords(true);
                     break;
                 }
                 case "/irregularVerb": {
+                    person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusIrregularVerb(true);
                     break;
                 }
                 case "/studySentence": {
+                    person.getQuiz().clearFields();
+                    execute(EditMessageText
+                                    .builder()
+                                    .chatId(getCHAT_ID())
+                                    .text("Select action")
+                                    .replyMarkup(new Keyboard(Bot.this)
+                                    .editKeyboard(Button.CHOOSE_SENTENCES, Button.WRITE_SENTENCES))
+                                    .messageId(person.getQuiz().getMessageId())
+                                    .build());
+                    break;
+                }
+                case "/writeSentence": {
+                    person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusSentences(true);
                     break;
                 }
+                case "/chooseSentence": {
+                    person.getQuiz().clearFields();
+                    person.getQuiz().setQuizStatusChoose(true);
+                    break;
+                }
                 case "/studySprint": {
+                    person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusSprint(true);
                     break;
                 }
                 case "/finish": {
                     person.getQuiz().clearFields();
-                    new Keyboard(Bot.this).printMenu();
+                    Keyboard keyboard = new Keyboard(Bot.this).printMenu();
+                    person.getQuiz().setMessageId(keyboard.getKeyboardId());
                     break;
                 }
             }
@@ -83,14 +106,17 @@ public class Bot extends TelegramLongPollingBot {
     private void startBot(Update update) throws TelegramApiException {
         new Sticker(Bot.this).send("16");
         Long chatId = update.getMessage().getChatId();
+        Person person;
         if(!userService.hasUser(chatId)) {
-            userService.save(new Person(chatId, new Quiz().clearFields()));
+            person = new Person(chatId, new Quiz().clearFields());
+
         } else {
-            Person person = userService.getById(Long.parseLong(CHAT_ID));
+            person = userService.getById(Long.parseLong(CHAT_ID));
             person.getQuiz().clearFields();
-            userService.save(person);
         }
-        new Keyboard(Bot.this).printMenu();
+        Keyboard keyboard = new Keyboard(Bot.this).printMenu();
+        person.getQuiz().setMessageId(keyboard.getKeyboardId());
+        userService.save(person);
     }
 
     public String getCHAT_ID() {

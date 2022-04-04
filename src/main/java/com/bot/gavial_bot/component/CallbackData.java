@@ -6,4 +6,6 @@ public interface CallbackData {
     String STUDY_SPRINT = "/studySprint";
     String FINISH = "/finish";
     String STUDY_IRREGULAR_VERB = "/irregularVerb";
+    String WRITE_SENTENCES = "/writeSentence";
+    String CHOOSE_SENTENCES = "/chooseSentence";
 }
