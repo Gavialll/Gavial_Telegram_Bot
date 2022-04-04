@@ -31,7 +31,7 @@ public class SprintQuiz {
                         .build());
             } else {
                 if(person.getQuiz().getSprintMaxScore() < score) person.getQuiz().setSprintMaxScore(score);
-                new Send(bot).message(Message.printResult(score, sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish(), person.getQuiz().getSprintMaxScore()));
+                new Send(bot).message(Message.printResult(score, sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toUpperCase(Locale.ROOT), person.getQuiz().getSprintMaxScore()));
                 new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SPRINT, Button.FINISH);
                 person.getQuiz().clearFields();
                 userService.save(person);
@@ -39,7 +39,6 @@ public class SprintQuiz {
             }
         }
 
-        Integer iterator = person.getQuiz().getIterator();
         List<Word> sentenceList = sentenceService.getAll();
         Integer random = Random.random(0, sentenceList.size() -1);
         Word sentence = sentenceList.get(random);
@@ -47,8 +46,6 @@ public class SprintQuiz {
         Integer id = new Send(bot).message(Message.printQuestion(sentence.getUkraine()));
         person.getQuiz().setMessageId(id);
         person.getQuiz().setQuestionId(sentence.getId());
-        iterator++;
-        person.getQuiz().setIterator(iterator);
 
         userService.save(person);
     }
