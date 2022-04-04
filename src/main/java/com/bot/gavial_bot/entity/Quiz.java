@@ -35,7 +35,6 @@ public class Quiz {
     private String buttonsText = "";
     private String sentenceText = "";
 
-
     public Quiz clearFields(){
         this.score = 0;
         this.iterator = 0;
