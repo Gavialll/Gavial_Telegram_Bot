@@ -16,30 +16,21 @@ public class SentenceQuiz {
     public void start(Bot bot, Update update, SentenceService sentenceService, UserService userService) throws TelegramApiException {
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
         if(update.hasMessage()) {
+
             int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
-            int questionsSize = 5;
-            if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish())) {
+            int questionsSize = 10;
+
+            String userAnswer = update.getMessage().getText().toLowerCase(Locale.ROOT);
+            String rightAnswer = sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
+
+            if(userAnswer.equals(rightAnswer)) {
                 score++;
                 person.getQuiz().setScore(score);
                 new Send(bot).message(Message.answer(person.getQuiz().getScore(), person.getQuiz().getIterator(), questionsSize));
-                if(person.getQuiz().getIterator() >= questionsSize) {
-                    new Sticker(bot).send(score);
-                    new Send(bot).message(Message.printResult(score));
-                    new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SENTENCES, Button.FINISH);
-                    person.getQuiz().clearFields();
-                    userService.save(person);
-                    return;
-                }
+                if(finishSentenceQuiz(bot, userService, person, score, questionsSize)) return;
             } else {
-                new Send(bot).message(Message.answer(person.getQuiz().getIterator(), questionsSize, sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish()));
-                if(person.getQuiz().getIterator() >= questionsSize) {
-                    new Sticker(bot).send(score);
-                    new Send(bot).message(Message.printResult(score));
-                    new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SENTENCES, Button.FINISH);
-                    person.getQuiz().clearFields();
-                    userService.save(person);
-                    return;
-                }
+                new Send(bot).message(Message.answer(person.getQuiz().getIterator(), questionsSize, rightAnswer));
+                if(finishSentenceQuiz(bot, userService, person, score, questionsSize)) return;
             }
         }
 
@@ -54,5 +45,17 @@ public class SentenceQuiz {
         person.getQuiz().setIterator(iterator);
 
         userService.save(person);
+    }
+
+    private boolean finishSentenceQuiz(Bot bot, UserService userService, Person person, int score, int questionsSize) throws TelegramApiException {
+        if(person.getQuiz().getIterator() >= questionsSize) {
+            new Sticker(bot).send(score);
+            new Send(bot).message(Message.printResult(score));
+            new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SENTENCES, Button.FINISH);
+            person.getQuiz().clearFields();
+            userService.save(person);
+            return true;
+        }
+        return false;
     }
 }

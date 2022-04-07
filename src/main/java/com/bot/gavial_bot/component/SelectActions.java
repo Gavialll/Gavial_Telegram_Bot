@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class SelectActions {
-    private Bot bot;
-    private Update update;
+    private final Bot bot;
+    private final Update update;
 
     public void select(Person person) throws TelegramApiException {
         if(person.getQuiz().getQuizStatusChoose()){

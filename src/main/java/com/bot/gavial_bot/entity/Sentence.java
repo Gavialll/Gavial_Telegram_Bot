@@ -13,11 +13,6 @@ public class Sentence{
     private String english;
     private String ukraine;
 
-    public Sentence(String english, String ukraine) {
-        this.english = english;
-        this.ukraine = ukraine;
-    }
-
     public Sentence() {
     }
 
@@ -25,16 +20,8 @@ public class Sentence{
         return english;
     }
 
-    public void setEnglish(String english) {
-        this.english = english;
-    }
-
     public String getUkraine() {
         return ukraine;
-    }
-
-    public void setUkraine(String ukraine) {
-        this.ukraine = ukraine;
     }
 
     public long getId() {

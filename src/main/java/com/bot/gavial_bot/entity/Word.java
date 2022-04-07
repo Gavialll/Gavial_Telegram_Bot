@@ -13,37 +13,18 @@ public class Word{
     private String english;
     private String ukraine;
 
-    public Word(String english, String ukraine) {
-        this.english = english;
-        this.ukraine = ukraine;
-    }
-
-    public Word() {
-
-    }
+    public Word() {}
 
     public String getEnglish() {
         return english;
-    }
-
-    public void setEnglish(String english) {
-        this.english = english;
     }
 
     public String getUkraine() {
         return ukraine;
     }
 
-    public void setUkraine(String ukraine) {
-        this.ukraine = ukraine;
-    }
-
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     @Override

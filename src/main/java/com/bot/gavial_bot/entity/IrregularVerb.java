@@ -20,6 +20,8 @@ public class IrregularVerb {
     private String future;
     private String ukraine;
 
+
+    // TODO: 06.04.2022 Try delete toString() and getPresent();
     @Override
     public String toString() {
         return present.replace("to ", "").trim() + " " + past + " " + future;

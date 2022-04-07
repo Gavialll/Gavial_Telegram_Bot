@@ -7,6 +7,7 @@ import com.bot.gavial_bot.entity.Quiz;
 import com.bot.gavial_bot.entity.Sentence;
 import com.bot.gavial_bot.service.SentenceService;
 import com.bot.gavial_bot.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -16,15 +17,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 public class ChooseQuiz {
 
     public void start(Bot bot, Update update, SentenceService sentenceService, UserService userService) throws TelegramApiException {
+        log.info("Start Choose quiz");
 
         List<Sentence> sentenceList = sentenceService.getAll();
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
 
         if(person.getQuiz().getFlagChoose()) {
             printSentence(bot, sentenceList, person, userService);
+            log.info("Print first question");
         }else {
             if(update.hasCallbackQuery()) {
                 Quiz quiz = person.getQuiz();
@@ -74,6 +78,7 @@ public class ChooseQuiz {
                                 bot.execute(deleteMessage);
 
                                 printSentence(bot, sentenceList, person, userService);
+                                log.info("Print new question");
                                 return;
                             }
                             else {
@@ -89,6 +94,8 @@ public class ChooseQuiz {
                                 new Send(bot).message(Message.printResult(quiz.getScore(),sentence.getEnglish(), quiz.getChooseMaxScore(), quiz.getSentenceText()));
                                 new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_CHOOSE, Button.FINISH);
                                 userService.save(person);
+                                log.info("Finish Choose quiz");
+                                return;
                             }
                         }
                     }
@@ -98,7 +105,7 @@ public class ChooseQuiz {
                         .chatId(bot.getCHAT_ID())
                         .text(Message.printQuestion(quiz.getIrregularVerbAnswer()) + "\nYou choose: " +quiz.getSentenceText())
                         .replyMarkup(new Keyboard(bot)
-                                .editChooseButton(buttonsList))
+                                .createChooseButton(buttonsList))
                         .messageId(person.getQuiz()
                                 .getMessageId())
                         .build());

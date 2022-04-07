@@ -19,7 +19,9 @@ public class IrregularVerbQuiz {
         List<IrregularVerb> irregularVerbList = irregularVerbService.getAll();
         Integer score = person.getQuiz().getScore();
         Integer iterator = person.getQuiz().getIterator();
+
         if(person.getQuiz().getIterator() == 0){
+            iterator++;
             if(person.getQuiz().getFlagImgIrregularVerb()) {
                 new Send(bot).Image("src/main/resources/Image/ExampleIrregularVerb.jpg");
                 person.getQuiz().setFlagImgIrregularVerb(false);
@@ -28,7 +30,6 @@ public class IrregularVerbQuiz {
             Integer id = new Send(bot).message("Write all forms irregular verb: " + irregularVerbList.get(random).getUkraine().toUpperCase(Locale.ROOT));
             person.getQuiz().setMessageId(id);
             person.getQuiz().setQuestionId(irregularVerbList.get(random).getId());
-            iterator++;
             person.getQuiz().setIterator(iterator);
             userService.save(person);
         }else {
@@ -41,18 +42,24 @@ public class IrregularVerbQuiz {
             if(person.getQuiz().getIterator() == 4) {
                 if(update.hasMessage()) {
                     IrregularVerb irregularVerb = irregularVerbService.get(person.getQuiz().getQuestionId());
+                    String userAnswer = irregularVerb.toString().toLowerCase(Locale.ROOT);
+                    String rightAnswer = person.getQuiz().getIrregularVerbAnswer().toLowerCase(Locale.ROOT);
 
-                    if(irregularVerb.toString().toLowerCase(Locale.ROOT).equals(person.getQuiz().getIrregularVerbAnswer().toLowerCase(Locale.ROOT))) {
+                    if(userAnswer.equals(rightAnswer)) {
                         score++;
-                        person.getQuiz().setScore(score);
+
                         bot.execute(EditMessageText
                                 .builder()
-                                    .chatId(bot.getCHAT_ID()).text("«" + irregularVerb.toString().toUpperCase(Locale.ROOT) + "» ✅")
+                                    .chatId(bot.getCHAT_ID()).text("«" + userAnswer + "» ✅")
                                     .messageId(person.getQuiz().getMessageId())
                                 .build());
+
+                        person.getQuiz().setScore(score);
                         person.getQuiz().setIterator(0);
                         person.getQuiz().setIrregularVerbAnswer("");
+
                         userService.save(person);
+
                         start(bot, update, userService, irregularVerbService);
                     } else {
                         if(person.getQuiz().getIrregularVerbMaxScore() < score) person.getQuiz().setIrregularVerbMaxScore(score);
@@ -61,12 +68,15 @@ public class IrregularVerbQuiz {
                         String good = "✅";
                         String bad = "❌";
                         String[] action = {bad, bad, bad};
+
                         if(irregularVerb.getPresent().toUpperCase(Locale.ROOT).trim().equals(irregularVerbs[0])) action[0] = good;
                         if(irregularVerb.getPast().toUpperCase(Locale.ROOT).trim().equals(irregularVerbs[1])) action[1] = good;
                         if(irregularVerb.getFuture().toUpperCase(Locale.ROOT).trim().equals(irregularVerbs[2])) action[2] = good;
 
                         String question = irregularVerb.getPresent() + ", " + irregularVerb.getPast() + ", " + irregularVerb.getFuture();
-                        new Send(bot).message(Message.printResult(score, question.toUpperCase(Locale.ROOT), person.getQuiz().getIrregularVerbMaxScore(),irregularVerbs[0] + action[0] + ", " + irregularVerbs[1] + action[1] + ", " + irregularVerbs[2] + action[2]));
+                        String answer = irregularVerbs[0] + action[0] + ", " + irregularVerbs[1] + action[1] + ", " + irregularVerbs[2] + action[2];
+
+                        new Send(bot).message(Message.printResult(score, question.toUpperCase(Locale.ROOT), person.getQuiz().getIrregularVerbMaxScore(),answer));
                         new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_IRREGULAR_VERB, Button.FINISH);
                         person.getQuiz().clearFields();
                         userService.save(person);
