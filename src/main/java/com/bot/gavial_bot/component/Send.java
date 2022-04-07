@@ -6,11 +6,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import javax.imageio.stream.FileImageInputStream;
 import java.io.File;
 
 public class Send {
-    private Bot bot;
+    private final Bot bot;
 
     public Integer message(String message){
         SendMessage sendMessage = new SendMessage();
@@ -21,6 +20,7 @@ public class Send {
         } catch(TelegramApiException e) {
             e.printStackTrace();
         }
+        // TODO: 06.04.2022 Write Exception "MessageNoSend";
         return null;
     }
 

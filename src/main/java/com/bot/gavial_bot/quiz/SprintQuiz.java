@@ -18,9 +18,12 @@ public class SprintQuiz {
     public void start(Bot bot, Update update, UserService userService, WordService sentenceService) throws TelegramApiException {
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
         if(update.hasMessage()) {
-            int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
+            int score = person.getQuiz().getScore();
 
-            if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish())) {
+            String userAnswer = update.getMessage().getText().toLowerCase(Locale.ROOT);
+            String rightAnswer = sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
+
+            if(userAnswer.equals(rightAnswer)) {
                 score++;
                 person.getQuiz().setScore(score);
                 bot.execute(EditMessageText
@@ -31,7 +34,7 @@ public class SprintQuiz {
                         .build());
             } else {
                 if(person.getQuiz().getSprintMaxScore() < score) person.getQuiz().setSprintMaxScore(score);
-                new Send(bot).message(Message.printResult(score, sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toUpperCase(Locale.ROOT), person.getQuiz().getSprintMaxScore()));
+                new Send(bot).message(Message.printResult(score, rightAnswer.toUpperCase(Locale.ROOT), person.getQuiz().getSprintMaxScore()));
                 new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SPRINT, Button.FINISH);
                 person.getQuiz().clearFields();
                 userService.save(person);

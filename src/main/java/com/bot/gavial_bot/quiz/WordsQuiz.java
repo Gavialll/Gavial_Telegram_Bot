@@ -17,36 +17,27 @@ public class WordsQuiz {
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
 
         if(update.hasMessage()) {
-            int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
+            int score = person.getQuiz().getScore();
             int questionsSize = 10;
-            if(update.getMessage().getText().toLowerCase(Locale.ROOT).equals(wordService.getById(person.getQuiz().getQuestionId()).getEnglish())) {
+
+            String userAnswer = update.getMessage().getText().toLowerCase(Locale.ROOT);
+            String rightAnswer = wordService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
+
+            if(userAnswer.equals(rightAnswer)) {
                 score++;
                 person.getQuiz().setScore(score);
+
                 new Send(bot).message(Message.answer(person.getQuiz().getScore(), person.getQuiz().getIterator(), questionsSize));
-                if(person.getQuiz().getIterator() >= questionsSize) {
-                    new Sticker(bot).send(score);
-                    new Send(bot).message(Message.printResult(score));
-                    new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_WORDS, Button.FINISH);
-                    person.getQuiz().clearFields();
-                    userService.save(person);
-                    return;
-                }
+                if(finishWordQuiz(bot, userService, person, score, questionsSize)) return;
             } else {
-                new Send(bot).message(Message.answer(person.getQuiz().getIterator(), questionsSize, wordService.getById(person.getQuiz().getQuestionId()).getEnglish()));
-                if(person.getQuiz().getIterator() >= questionsSize) {
-                    new Sticker(bot).send(score);
-                    new Send(bot).message(Message.printResult(score));
-                    new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_WORDS, Button.FINISH);
-                    person.getQuiz().clearFields();
-                    userService.save(person);
-                    return;
-                }
+                new Send(bot).message(Message.answer(person.getQuiz().getIterator(), questionsSize, rightAnswer));
+                if(finishWordQuiz(bot, userService, person, score, questionsSize)) return;
             }
         }
 
         Integer iterator = person.getQuiz().getIterator();
         List<Word> sentenceList = wordService.getAll();
-        Integer random = Random.random(0, sentenceList.size() -1);
+        Integer random = Random.random(0, sentenceList.size() - 1);
         Word word = sentenceList.get(random);
 
         new Send(bot).message(Message.printQuestion(word.getUkraine()));
@@ -54,5 +45,17 @@ public class WordsQuiz {
         iterator++;
         person.getQuiz().setIterator(iterator);
         userService.save(person);
+    }
+
+    private boolean finishWordQuiz(Bot bot, UserService userService, Person person, int score, int questionsSize) throws TelegramApiException {
+        if(person.getQuiz().getIterator() >= questionsSize) {
+            new Sticker(bot).send(score);
+            new Send(bot).message(Message.printResult(score));
+            new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_WORDS, Button.FINISH);
+            person.getQuiz().clearFields();
+            userService.save(person);
+            return true;
+        }
+        return false;
     }
 }

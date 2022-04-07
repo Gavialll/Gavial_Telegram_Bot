@@ -1,9 +1,6 @@
 package com.bot.gavial_bot.controller;
 
-import com.bot.gavial_bot.component.Button;
-import com.bot.gavial_bot.component.Keyboard;
-import com.bot.gavial_bot.component.SelectActions;
-import com.bot.gavial_bot.component.Sticker;
+import com.bot.gavial_bot.component.*;
 import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.entity.Quiz;
 import com.bot.gavial_bot.service.IrregularVerbService;
@@ -13,26 +10,29 @@ import com.bot.gavial_bot.service.WordService;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+
 @Slf4j
 @Component
 @Data
 public class Bot extends TelegramLongPollingBot {
-    @Autowired
-    private SentenceService sentenceService;
-    @Autowired
-    private IrregularVerbService irregularVerbService;
-    @Autowired
-    private WordService wordService;
-    @Autowired
-    private UserService userService;
+    private final SentenceService sentenceService;
+    private final IrregularVerbService irregularVerbService;
+    private final WordService wordService;
+    private final UserService userService;
     private String CHAT_ID;
+
+    public Bot(SentenceService sentenceService, IrregularVerbService irregularVerbService, WordService wordService, UserService userService) {
+        this.sentenceService = sentenceService;
+        this.irregularVerbService = irregularVerbService;
+        this.wordService = wordService;
+        this.userService = userService;
+    }
 
     @SneakyThrows
     @Override
@@ -42,47 +42,52 @@ public class Bot extends TelegramLongPollingBot {
             CHAT_ID = update.getMessage().getChatId().toString();
             startBot(update);
         }
-        if(update.hasMessage()){
+        if(update.hasMessage()) {
             CHAT_ID = update.getMessage().getChatId().toString();
         }
         if(update.hasCallbackQuery()) {
             CHAT_ID = update.getCallbackQuery().getMessage().getChatId().toString();
             Person person = userService.getById(Long.parseLong(CHAT_ID));
 
-            switch(update.getCallbackQuery().getData()){
+            switch(update.getCallbackQuery().getData()) {
                 case "/studyWords": {
+                    log.info("Select action: " + CallbackData.STUDY_WORDS);
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusWords(true);
                     break;
                 }
                 case "/irregularVerb": {
+                    log.info("Select action: " + CallbackData.STUDY_IRREGULAR_VERB);
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusIrregularVerb(true);
                     break;
                 }
                 case "/studySentence": {
                     person.getQuiz().clearFields();
-                    execute(EditMessageText
-                                    .builder()
-                                    .chatId(getCHAT_ID())
-                                    .text("Select action")
-                                    .replyMarkup(new Keyboard(Bot.this)
-                                    .editKeyboard(Button.CHOOSE_SENTENCES, Button.WRITE_SENTENCES))
-                                    .messageId(person.getQuiz().getMessageId())
-                                    .build());
+                    execute(EditMessageText.builder()
+                            .chatId(getCHAT_ID())
+                            .text("Select action")
+                            .replyMarkup(new Keyboard(Bot.this)
+                                    .createKeyboard(Button.CHOOSE_SENTENCES, Button.WRITE_SENTENCES))
+                            .messageId(person.getQuiz()
+                                    .getMessageId())
+                            .build());
                     break;
                 }
                 case "/writeSentence": {
+                    log.info("Select action: " + CallbackData.WRITE_SENTENCES);
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusSentences(true);
                     break;
                 }
                 case "/chooseSentence": {
+                    log.info("Select action: " + CallbackData.CHOOSE_SENTENCES);
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusChoose(true);
                     break;
                 }
                 case "/studySprint": {
+                    log.info("Select action: " + CallbackData.STUDY_SPRINT);
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusSprint(true);
                     break;
@@ -96,11 +101,9 @@ public class Bot extends TelegramLongPollingBot {
             }
             userService.save(person);
         }
-
         Person person = userService.getById(Long.parseLong(CHAT_ID));
 
         new SelectActions(Bot.this, update).select(person);
-
     }
 
     private void startBot(Update update) throws TelegramApiException {
@@ -109,10 +112,12 @@ public class Bot extends TelegramLongPollingBot {
         Person person;
         if(!userService.hasUser(chatId)) {
             person = new Person(chatId, new Quiz().clearFields());
+            log.info("Create new user: " + person);
 
         } else {
             person = userService.getById(Long.parseLong(CHAT_ID));
             person.getQuiz().clearFields();
+            log.info("Get user:  " + person);
         }
         Keyboard keyboard = new Keyboard(Bot.this).printMenu();
         person.getQuiz().setMessageId(keyboard.getKeyboardId());

@@ -11,7 +11,7 @@ import java.io.File;
 @Component
 public class Sticker{
 
-    private Bot bot;
+    private final Bot bot;
 
     public void send(String name) throws TelegramApiException {
         File file = new File("src/main/resources/sticker/" + name + ".tgs");
