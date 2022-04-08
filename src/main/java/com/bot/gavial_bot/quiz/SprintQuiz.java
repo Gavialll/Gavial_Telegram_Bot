@@ -6,6 +6,7 @@ import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.entity.Word;
 import com.bot.gavial_bot.service.UserService;
 import com.bot.gavial_bot.service.WordService;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 public class SprintQuiz {
 
     public void start(Bot bot, Update update, UserService userService, WordService sentenceService) throws TelegramApiException {
@@ -24,6 +26,7 @@ public class SprintQuiz {
             String rightAnswer = sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
 
             if(userAnswer.equals(rightAnswer)) {
+                log.info("Print -> Sprint new question");
                 score++;
                 person.getQuiz().setScore(score);
                 bot.execute(EditMessageText
@@ -38,6 +41,7 @@ public class SprintQuiz {
                 new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SPRINT, Button.FINISH);
                 person.getQuiz().clearFields();
                 userService.save(person);
+                log.info("Finish -> Sprint");
                 return;
             }
         }

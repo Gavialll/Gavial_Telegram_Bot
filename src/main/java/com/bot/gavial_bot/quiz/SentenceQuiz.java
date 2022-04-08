@@ -6,17 +6,19 @@ import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.entity.Sentence;
 import com.bot.gavial_bot.service.SentenceService;
 import com.bot.gavial_bot.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 public class SentenceQuiz {
     public void start(Bot bot, Update update, SentenceService sentenceService, UserService userService) throws TelegramApiException {
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
+        Integer iterator = person.getQuiz().getIterator();
         if(update.hasMessage()) {
-
             int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
             int questionsSize = 10;
 
@@ -24,17 +26,18 @@ public class SentenceQuiz {
             String rightAnswer = sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
 
             if(userAnswer.equals(rightAnswer)) {
+                log.info("Print -> next Sentence: " + iterator);
                 score++;
                 person.getQuiz().setScore(score);
                 new Send(bot).message(Message.answer(person.getQuiz().getScore(), person.getQuiz().getIterator(), questionsSize));
                 if(finishSentenceQuiz(bot, userService, person, score, questionsSize)) return;
             } else {
+                log.info("Finish -> Sentence");
                 new Send(bot).message(Message.answer(person.getQuiz().getIterator(), questionsSize, rightAnswer));
                 if(finishSentenceQuiz(bot, userService, person, score, questionsSize)) return;
             }
         }
 
-        Integer iterator = person.getQuiz().getIterator();
         List<Sentence> sentenceList = sentenceService.getAll();
         Integer random = Random.random(0, sentenceList.size() -1);
         Sentence sentence = sentenceList.get(random);
@@ -45,6 +48,7 @@ public class SentenceQuiz {
         person.getQuiz().setIterator(iterator);
 
         userService.save(person);
+        log.info("Print -> first Sentence: " + iterator);
     }
 
     private boolean finishSentenceQuiz(Bot bot, UserService userService, Person person, int score, int questionsSize) throws TelegramApiException {

@@ -6,6 +6,7 @@ import com.bot.gavial_bot.entity.IrregularVerb;
 import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.service.IrregularVerbService;
 import com.bot.gavial_bot.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 public class IrregularVerbQuiz {
     public void start(Bot bot, Update update, UserService userService, IrregularVerbService irregularVerbService) throws TelegramApiException {
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
@@ -32,6 +34,7 @@ public class IrregularVerbQuiz {
             person.getQuiz().setQuestionId(irregularVerbList.get(random).getId());
             person.getQuiz().setIterator(iterator);
             userService.save(person);
+            log.info("Print -> first Irregular verb: " + iterator);
         }else {
             iterator++;
             person.getQuiz().setIterator(iterator);
@@ -61,6 +64,7 @@ public class IrregularVerbQuiz {
                         userService.save(person);
 
                         start(bot, update, userService, irregularVerbService);
+                        log.info("Print -> next Irregular verb: " + iterator);
                     } else {
                         if(person.getQuiz().getIrregularVerbMaxScore() < score) person.getQuiz().setIrregularVerbMaxScore(score);
 
@@ -80,6 +84,7 @@ public class IrregularVerbQuiz {
                         new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_IRREGULAR_VERB, Button.FINISH);
                         person.getQuiz().clearFields();
                         userService.save(person);
+                        log.info("Finish -> Irregular verb");
                     }
                 }
             }

@@ -10,7 +10,7 @@ public enum Button {
     FINISH("Menu \uD83C\uDFE0", CallbackData.FINISH),
     TRY_AGAIN_IRREGULAR_VERB("Try again 🔄", CallbackData.STUDY_IRREGULAR_VERB),
     TRY_AGAIN_SPRINT("Try again 🔄", CallbackData.STUDY_SPRINT),
-    TRY_AGAIN_SENTENCES("Try again 🔄", CallbackData.STUDY_SENTENCES),
+    TRY_AGAIN_SENTENCES("Try again 🔄", CallbackData.WRITE_SENTENCES),
     TRY_AGAIN_WORDS("Try again 🔄" , CallbackData.STUDY_WORDS),
     TRY_AGAIN_CHOOSE("Try again 🔄", CallbackData.CHOOSE_SENTENCES);
     private final String name;

@@ -21,7 +21,6 @@ import java.util.List;
 public class ChooseQuiz {
 
     public void start(Bot bot, Update update, SentenceService sentenceService, UserService userService) throws TelegramApiException {
-        log.info("Start Choose quiz");
 
         List<Sentence> sentenceList = sentenceService.getAll();
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
@@ -78,7 +77,7 @@ public class ChooseQuiz {
                                 bot.execute(deleteMessage);
 
                                 printSentence(bot, sentenceList, person, userService);
-                                log.info("Print new question");
+                                log.info("Print next question");
                                 return;
                             }
                             else {
