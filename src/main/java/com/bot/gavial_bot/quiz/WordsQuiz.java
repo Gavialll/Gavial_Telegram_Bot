@@ -6,12 +6,14 @@ import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.entity.Word;
 import com.bot.gavial_bot.service.UserService;
 import com.bot.gavial_bot.service.WordService;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 public class WordsQuiz {
     public void start(Bot bot, Update update, WordService wordService, UserService userService) throws TelegramApiException {
         Person person = userService.getById(Long.parseLong(bot.getCHAT_ID()));
@@ -24,12 +26,14 @@ public class WordsQuiz {
             String rightAnswer = wordService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
 
             if(userAnswer.equals(rightAnswer)) {
+                log.info("Print -> next Word");
                 score++;
                 person.getQuiz().setScore(score);
 
                 new Send(bot).message(Message.answer(person.getQuiz().getScore(), person.getQuiz().getIterator(), questionsSize));
                 if(finishWordQuiz(bot, userService, person, score, questionsSize)) return;
             } else {
+                log.info("Finish -> Word");
                 new Send(bot).message(Message.answer(person.getQuiz().getIterator(), questionsSize, rightAnswer));
                 if(finishWordQuiz(bot, userService, person, score, questionsSize)) return;
             }
@@ -45,6 +49,7 @@ public class WordsQuiz {
         iterator++;
         person.getQuiz().setIterator(iterator);
         userService.save(person);
+        log.info("Print -> first Word");
     }
 
     private boolean finishWordQuiz(Bot bot, UserService userService, Person person, int score, int questionsSize) throws TelegramApiException {
