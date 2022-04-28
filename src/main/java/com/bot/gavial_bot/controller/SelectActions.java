@@ -1,6 +1,5 @@
 package com.bot.gavial_bot.controller;
 
-import com.bot.gavial_bot.controller.Bot;
 import com.bot.gavial_bot.entity.Person;
 import com.bot.gavial_bot.quiz.*;
 import lombok.extern.slf4j.Slf4j;
@@ -14,23 +13,18 @@ public class SelectActions {
 
     public void select(Person person) throws TelegramApiException {
         if(person.getQuiz().getQuizStatusChoose()){
-            log.info("Start -> Choose quiz");
             new ChooseQuiz().start(bot, update, bot.getSentenceService(), bot.getUserService());
         }
         if(person.getQuiz().getQuizStatusSentences()) {
-            log.info("Start -> Sentence quiz");
             new SentenceQuiz().start(bot, update, bot.getSentenceService(), bot.getUserService());
         }
         if(person.getQuiz().getQuizStatusWords()) {
-            log.info("Start -> Word quiz");
             new WordsQuiz().start(bot, update, bot.getWordService(), bot.getUserService());
         }
         if(person.getQuiz().getQuizStatusSprint()){
-            log.info("Start -> Sprint quiz");
             new SprintQuiz().start(bot, update, bot.getUserService(), bot.getWordService());
         }
         if(person.getQuiz().getQuizStatusIrregularVerb()){
-            log.info("Start -> Irregular verb quiz");
             new IrregularVerbQuiz().start(bot, update, bot.getUserService(), bot.getIrregularVerbService());
         }
     }
