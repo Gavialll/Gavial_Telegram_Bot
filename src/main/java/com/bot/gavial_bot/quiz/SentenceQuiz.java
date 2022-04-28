@@ -22,8 +22,8 @@ public class SentenceQuiz {
             int score = userService.getById(Long.parseLong(bot.getCHAT_ID())).getQuiz().getScore();
             int questionsSize = 10;
 
-            String userAnswer = update.getMessage().getText().toLowerCase(Locale.ROOT);
-            String rightAnswer = sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT);
+            String userAnswer = update.getMessage().getText().toLowerCase(Locale.ROOT).trim();
+            String rightAnswer = sentenceService.getById(person.getQuiz().getQuestionId()).getEnglish().toLowerCase(Locale.ROOT).trim();
 
             if(userAnswer.equals(rightAnswer)) {
                 log.info("Print -> next Sentence: " + iterator);

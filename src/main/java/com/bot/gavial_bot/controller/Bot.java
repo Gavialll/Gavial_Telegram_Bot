@@ -51,13 +51,13 @@ public class Bot extends TelegramLongPollingBot {
 
             switch(update.getCallbackQuery().getData()) {
                 case "/studyWords": {
-                    log.info("Select action: " + CallbackData.STUDY_WORDS);
+                    log.info("Start -> Word quiz");
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusWords(true);
                     break;
                 }
                 case "/irregularVerb": {
-                    log.info("Select action: " + CallbackData.STUDY_IRREGULAR_VERB);
+                    log.info("Start -> Irregular verb quiz");
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusIrregularVerb(true);
                     break;
@@ -75,19 +75,19 @@ public class Bot extends TelegramLongPollingBot {
                     break;
                 }
                 case "/writeSentence": {
-                    log.info("Select action: " + CallbackData.WRITE_SENTENCES);
+                    log.info("Start -> Sentence quiz");
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusSentences(true);
                     break;
                 }
                 case "/chooseSentence": {
-                    log.info("Select action: " + CallbackData.CHOOSE_SENTENCES);
+                    log.info("Start -> Choose quiz");
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusChoose(true);
                     break;
                 }
                 case "/studySprint": {
-                    log.info("Select action: " + CallbackData.STUDY_SPRINT);
+                    log.info("Start -> Sprint quiz");
                     person.getQuiz().clearFields();
                     person.getQuiz().setQuizStatusSprint(true);
                     break;

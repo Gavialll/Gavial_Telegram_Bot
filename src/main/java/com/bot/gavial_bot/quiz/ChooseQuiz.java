@@ -116,7 +116,7 @@ public class ChooseQuiz {
 
     public void printSentence(Bot bot, List<Sentence> sentenceList, Person person, UserService userService){
         person.getQuiz().setSentenceText("");
-        int random = Random.random(0,sentenceList.size());
+        int random = Random.random(0,sentenceList.size()-1);
         Sentence sentence = sentenceList.get(random);
         List<String> words = Arrays.asList(sentence.getEnglish().split(" "));
         Collections.shuffle(words);
