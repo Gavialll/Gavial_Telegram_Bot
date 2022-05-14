@@ -1,12 +1,12 @@
 package com.bot.gavial_bot.component;
 
 public enum Button {
-    STUDY_WORDS ("Study words \uD83D\uDCDA", CallbackData.STUDY_WORDS),
-    STUDY_SENTENCES ("Study sentences \uD83C\uDF93", CallbackData.STUDY_SENTENCES),
+    STUDY_WORDS ("Words \uD83D\uDCDA", CallbackData.STUDY_WORDS),
+    STUDY_SENTENCES ("Sentences \uD83C\uDF93", CallbackData.STUDY_SENTENCES),
     WRITE_SENTENCES ("Write sentences ✏️", CallbackData.WRITE_SENTENCES),
     CHOOSE_SENTENCES ("Choose sentences \uD83D\uDC46", CallbackData.CHOOSE_SENTENCES),
     STUDY_SPRINT("Sprint \uD83C\uDFC1", CallbackData.STUDY_SPRINT),
-    STUDY_IRREGULAR_VERB("Study irregular verb \uD83D\uDCD8", CallbackData.STUDY_IRREGULAR_VERB),
+    STUDY_IRREGULAR_VERB("Irregular verb \uD83D\uDCD8", CallbackData.STUDY_IRREGULAR_VERB),
     FINISH("Menu \uD83C\uDFE0", CallbackData.FINISH),
     TRY_AGAIN_IRREGULAR_VERB("Try again 🔄", CallbackData.STUDY_IRREGULAR_VERB),
     TRY_AGAIN_SPRINT("Try again 🔄", CallbackData.STUDY_SPRINT),

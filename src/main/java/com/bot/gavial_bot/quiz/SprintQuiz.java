@@ -32,12 +32,12 @@ public class SprintQuiz {
                 bot.execute(EditMessageText
                         .builder()
                         .chatId(bot.getCHAT_ID())
-                        .text("«" + update.getMessage().getText().toUpperCase(Locale.ROOT) + "» ✅")
+                        .text("«" + Message.upperCaseFirstLetter(update.getMessage().getText()) + "» ✅")
                         .messageId(person.getQuiz().getMessageId())
                         .build());
             } else {
                 if(person.getQuiz().getSprintMaxScore() < score) person.getQuiz().setSprintMaxScore(score);
-                new Send(bot).message(Message.printResult(score, rightAnswer.toUpperCase(Locale.ROOT), person.getQuiz().getSprintMaxScore()));
+                new Send(bot).message(Message.printResult(score, rightAnswer, person.getQuiz().getSprintMaxScore()));
                 new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_SPRINT, Button.FINISH);
                 person.getQuiz().clearFields();
                 userService.save(person);

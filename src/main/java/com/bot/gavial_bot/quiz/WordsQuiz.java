@@ -30,7 +30,11 @@ public class WordsQuiz {
                 score++;
                 person.getQuiz().setScore(score);
 
-                new Send(bot).message(Message.answer(person.getQuiz().getScore(), person.getQuiz().getIterator(), questionsSize));
+                new Send(bot).message(
+                        Message.answer(
+                        person.getQuiz().getScore(),
+                        person.getQuiz().getIterator(),
+                        questionsSize));
                 if(finishWordQuiz(bot, userService, person, score, questionsSize)) return;
             } else {
                 log.info("Finish -> Word");

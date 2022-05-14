@@ -29,7 +29,7 @@ public class IrregularVerbQuiz {
                 person.getQuiz().setFlagImgIrregularVerb(false);
             }
             Integer random = Random.random(0, irregularVerbList.size() - 1);
-            Integer id = new Send(bot).message("Write all forms irregular verb: " + irregularVerbList.get(random).getUkraine().toUpperCase(Locale.ROOT));
+            Integer id = new Send(bot).message("Write all forms irregular verb: " + Message.upperCaseFirstLetter(irregularVerbList.get(random).getUkraine()));
             person.getQuiz().setMessageId(id);
             person.getQuiz().setQuestionId(irregularVerbList.get(random).getId());
             person.getQuiz().setIterator(iterator);
@@ -53,7 +53,7 @@ public class IrregularVerbQuiz {
 
                         bot.execute(EditMessageText
                                 .builder()
-                                    .chatId(bot.getCHAT_ID()).text("«" + userAnswer + "» ✅")
+                                    .chatId(bot.getCHAT_ID()).text("«" + Message.upperCaseFirstLetter(userAnswer) + "» ✅")
                                     .messageId(person.getQuiz().getMessageId())
                                 .build());
 
@@ -80,7 +80,7 @@ public class IrregularVerbQuiz {
                         String question = irregularVerb.getPresent() + ", " + irregularVerb.getPast() + ", " + irregularVerb.getFuture();
                         String answer = irregularVerbs[0] + action[0] + ", " + irregularVerbs[1] + action[1] + ", " + irregularVerbs[2] + action[2];
 
-                        new Send(bot).message(Message.printResult(score, question.toUpperCase(Locale.ROOT), person.getQuiz().getIrregularVerbMaxScore(),answer));
+                        new Send(bot).message(Message.printResult(score, question, person.getQuiz().getIrregularVerbMaxScore(),answer));
                         new Keyboard(bot).printButton(Message.selectActive, Button.TRY_AGAIN_IRREGULAR_VERB, Button.FINISH);
                         person.getQuiz().clearFields();
                         userService.save(person);

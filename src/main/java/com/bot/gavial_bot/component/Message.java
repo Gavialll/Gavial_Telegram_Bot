@@ -20,18 +20,18 @@ public class Message {
     public static String printResult(Integer score, String rightAnswer, Integer maxScore, String youAnswer){
         return "You result: " + score + " \uD83C\uDFC5\n" +
                 "Max result: " + maxScore + " \uD83C\uDFC6\n" +
-                "You answer: "+ youAnswer + "\n" +
-                "Right answer: " + rightAnswer;
+                "You answer: "+ upperCaseFirstLetter(youAnswer) + "\n" +
+                "Right answer: " + upperCaseFirstLetter(rightAnswer);
     }
     public static String printResult(Integer score, String rightAnswer, Integer maxScore){
         return "You result: " + score + " \uD83C\uDFC5\n" +
                 "You answer incorrect ❌\n" +
-                "Right answer: «" + rightAnswer + "»\n" +
+                "Right answer: «" + upperCaseFirstLetter(rightAnswer) + "»\n" +
                 "Max result: " + maxScore+ " \uD83C\uDFC6";
     }
 
     public static String printQuestion (String question){
-        return "Translate: «" + question.toUpperCase(Locale.ROOT) + "»❔";
+        return "Translate: «" + upperCaseFirstLetter(question) + "»";
     }
 
     public static String answer(int result, int index, int size) {
@@ -43,7 +43,14 @@ public class Message {
     public static String answer(int index, int size, String answer) {
         return "Answer is incorrect ❌\n" +
                 "Question: " + index + "/" + size + "\uD83D\uDCC8\n" +
-                "Right answer: " + answer.toUpperCase(Locale.ROOT) +
+                "Right answer: " + upperCaseFirstLetter(answer) +
                 "\n➖➖➖➖➖➖➖➖➖➖➖";
+    }
+
+    public static String upperCaseFirstLetter(String str){
+        String result = "" + str.charAt(0);
+        result = result.toUpperCase();
+        result += str.substring(1).toLowerCase(Locale.ROOT);
+        return result;
     }
 }
