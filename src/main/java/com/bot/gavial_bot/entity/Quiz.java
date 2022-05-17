@@ -19,6 +19,7 @@ public class Quiz {
     private Boolean quizStatusSprint;
     private Boolean quizStatusIrregularVerb;
     private Integer iterator;
+    private Integer iteratorTwo;
     private Long questionId;
     @Column(nullable = false)
     private Integer sprintMaxScore = 0;
@@ -39,11 +40,22 @@ public class Quiz {
         this.score = 0;
         this.iterator = 0;
         this.questionId = 0L;
+        this.iteratorTwo = 0;
         this.quizStatusSentences = false;
         this.quizStatusWords = false;
         this.quizStatusSprint = false;
         this.quizStatusIrregularVerb = false;
         this.quizStatusChoose = false;
+        this.flagChoose = true;
+        this.irregularVerbAnswer = "";
+        this.buttonsText = "";
+        this.sentenceText = "";
+        return Quiz.this;
+    }
+
+    public Quiz clearSprintFields(){
+        this.questionId = 0L;
+        this.iteratorTwo = 0;
         this.flagChoose = true;
         this.irregularVerbAnswer = "";
         this.buttonsText = "";

@@ -15,7 +15,7 @@ public class Keyboard {
     private Integer keyboardId;
 
     public Keyboard printMenu() {
-        return printButton(Message.hello, Button.STUDY_SENTENCES, Button.STUDY_WORDS, Button.STUDY_SPRINT, Button.STUDY_IRREGULAR_VERB);
+        return printButton(Message.hello, Button.STUDY_SENTENCES, Button.STUDY_WORDS, Button.STUDY_IRREGULAR_VERB,  Button.STUDY_SPRINT);
     }
 
     public Keyboard printButton(String message, Button... arr) {

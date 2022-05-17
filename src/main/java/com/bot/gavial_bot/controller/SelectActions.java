@@ -22,7 +22,11 @@ public class SelectActions {
             new WordsQuiz().start(bot, update, bot.getWordService(), bot.getUserService());
         }
         if(person.getQuiz().getQuizStatusSprint()){
-            new SprintQuiz().start(bot, update, bot.getUserService(), bot.getWordService());
+            new SprintQuiz().start(bot, update,
+                    bot.getUserService(),
+                    bot.getWordService(),
+                    bot.getSentenceService(),
+                    bot.getIrregularVerbService());
         }
         if(person.getQuiz().getQuizStatusIrregularVerb()){
             new IrregularVerbQuiz().start(bot, update, bot.getUserService(), bot.getIrregularVerbService());

@@ -101,9 +101,10 @@ public class Bot extends TelegramLongPollingBot {
             }
             userService.save(person);
         }
-        Person person = userService.getById(Long.parseLong(CHAT_ID));
-
-        new SelectActions(Bot.this, update).select(person);
+        if(CHAT_ID != null) {
+            Person person = userService.getById(Long.parseLong(CHAT_ID));
+            new SelectActions(Bot.this, update).select(person);
+        }
     }
 
     private void startBot(Update update) throws TelegramApiException {
